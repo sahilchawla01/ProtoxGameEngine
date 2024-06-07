@@ -16,7 +16,8 @@ class Game
 public:
 	Game();
 
-	static void CloseGLFWWindow(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
 public: 
 	bool bShouldGameRun = true;

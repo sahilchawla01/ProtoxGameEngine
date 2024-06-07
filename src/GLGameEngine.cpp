@@ -6,10 +6,15 @@ Game::Game()
 	bShouldGameRun = true;
 }
 
-void Game::CloseGLFWWindow(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) 
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 void ErrorCallback(int error, const char* description)
@@ -51,8 +56,10 @@ int main()
 	//Create the game object
 	Game* game = new Game();
 
-	//Set key callback for if asked to close glfw window by pressing escape
-	glfwSetKeyCallback(window, game->CloseGLFWWindow);
+	//Set key callback which is called whenever a key is pressed
+	glfwSetKeyCallback(window, game->InputKeyCallback);
+	//Whenever frame buffer size changes, viewport size is changed
+	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
 	while (!glfwWindowShouldClose(window)) //Game loop
 	{
@@ -63,6 +70,13 @@ int main()
 
 		//If game should run is false, close the window
 		if (game->bShouldGameRun == false) glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
 	}
 
 	//Destroy the window
