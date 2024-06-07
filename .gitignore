@@ -31,3 +31,6 @@
 *.out
 *.app
 /.vs/GLGameEngine
+/x64/Debug
+/GLGameEngine
+/Debug
