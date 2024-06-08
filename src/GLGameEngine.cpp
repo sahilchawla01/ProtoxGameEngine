@@ -17,6 +17,16 @@ void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+double Game::GetTimeElapsedSinceLaunch()
+{
+	return TimeElapsed;
+}
+
+void Game::SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch)
+{
+	TimeElapsed = TimeElapsedSinceLaunch;
+}
+
 void ErrorCallback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
@@ -61,22 +71,27 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	while (!glfwWindowShouldClose(window)) //Game loop
-	{
-		//Simple game logic:
+
+	//Simple game logic:
 		//Process input
 		//Update
 		//Render
+	while (!glfwWindowShouldClose(window)) //Game loop
+	{
+		
+		//Update:
+		//Set elapsed time
+		game->SetTimeElapsedSinceLaunch(glfwGetTime());
 
 		//If game should run is false, close the window
 		if (game->bShouldGameRun == false) glfwSetWindowShouldClose(window, GLFW_TRUE);
 
+		//Render:
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 
 	//Destroy the window

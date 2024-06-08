@@ -22,4 +22,11 @@ public:
 public: 
 	bool bShouldGameRun = true;
 
+	double GetTimeElapsedSinceLaunch();
+	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
+
+private:
+	
+	double TimeElapsed = 0.f;
+
 };
