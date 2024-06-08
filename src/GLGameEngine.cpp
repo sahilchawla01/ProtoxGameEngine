@@ -71,19 +71,6 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	//Setup vertex input
-	float vertices[] = {
-		-0.5f, -0.5f, 0.f,
-		0.5f, -0.5f, 0.f,
-		0.0f, 0.5f, 0.f
-	};
-
-	//Create and bind a VBO(Vertex Buffer Object) to send vertex data to GPU
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
 	const char* vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"void main()\n"
@@ -137,6 +124,51 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	//Setup vertex input
+	float vertices[] = {
+		-0.5f, -0.5f, 0.f, //Bottom left
+		0.5f, -0.5f, 0.f, //Bottom right
+		-0.5f, 0.5f, 0.f, //Top left
+		0.5f, 0.5f, 0.f, //Top right
+	};
+
+	unsigned int indices[] =
+	{
+		//First triangle
+		0, 1, 2,
+		//Second triangle
+		1, 2, 3
+	};
+
+	//Create and bind a VAO(Vertex Array Object) that stores pointers to VBOS for the corresponding object
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+
+	//Create and bind a VBO(Vertex Buffer Object) to send vertex data to GPU
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+
+	//Create and bind a EBO(Element Buffer Object) to store indices to decide which vertices to draw
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	//Bind the VAO first
+	glBindVertexArray(VAO);
+
+	//Bind the VBO, next
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//Bind the EBO next
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//Finally, (Configure the vertex attribute) Tell OpenGl how to interpret vertex data 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//Unbind VBO, then unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 
 	//Simple game logic:
@@ -157,9 +189,22 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		//Draw a triangle 
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+		//Swap buffers and poll input events
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	//De-allocate all resources
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteProgram(shaderProgram);
 
 	//Destroy the window
 	glfwDestroyWindow(window);
