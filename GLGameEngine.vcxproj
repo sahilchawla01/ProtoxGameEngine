@@ -75,8 +75,8 @@
     <LibraryPath>C:\Dev\ThirdPartyLibraries\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Dev\ThirdPartyLibraries\include;C:\Dev\CppSeries\GLGameEngine\include</IncludePath>
-    <LibraryPath>C:\Dev\ThirdPartyLibraries\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Dev\ThirdPartyLibraries\include;F:\Personal\Dev\ThirdPartyLibraries\include;$(ProjectDir)\include</IncludePath>
+    <LibraryPath>C:\Dev\ThirdPartyLibraries\libs;F:\Personal\Dev\ThirdPartyLibraries\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,12 +115,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\ThirdPartyLibraries\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\ThirdPartyLibraries\include;F:\Personal\Dev\ThirdPartyLibraries\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Dev\ThirdPartyLibraries\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\ThirdPartyLibraries\libs;F:\Personal\Dev\ThirdPartyLibraries\libs;</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;user32.lib;gdi32.lib;opengl32.lib;shell32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -141,7 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="glfw-3.4\include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLGameEngine.h" />
   </ItemGroup>
   <ItemGroup>

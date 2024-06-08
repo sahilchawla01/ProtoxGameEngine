@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="glfw-3.4\include\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\GLGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
