@@ -124,12 +124,12 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	//Setup vertex input
+	//Create a rectangle object and setup vertex input
 	float vertices[] = {
 		-0.5f, -0.5f, 0.f, //Bottom left
-		0.5f, -0.5f, 0.f, //Bottom right
+		0.f, -0.5f, 0.f, //Bottom right
 		-0.5f, 0.5f, 0.f, //Top left
-		0.5f, 0.5f, 0.f, //Top right
+		0.f, 0.5f, 0.f, //Top right
 	};
 
 	unsigned int indices[] =
@@ -170,6 +170,33 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	//Create a rectangle object and setup vertex input
+	float secondTriangleVertices[] = {
+		0.f, 0.f, 0.f, //Bottom left
+		1.f, 0.f, 0.f, //Bottom right
+		1.f, 1.f, 0.f, //Top right
+	};
+
+	unsigned int SecondTriangleVAO;
+	glGenVertexArrays(1, &SecondTriangleVAO);
+	unsigned int SecondTriangleVBO;
+	glGenBuffers(1, &SecondTriangleVBO);
+
+	//Bind the SecondTriangleVAO first
+	glBindVertexArray(SecondTriangleVAO);
+
+	//Bind the SecondTriangleVBO, next
+	glBindBuffer(GL_ARRAY_BUFFER, SecondTriangleVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangleVertices), secondTriangleVertices, GL_STATIC_DRAW);
+
+	//Finally, (Configure the vertex attribute) Tell OpenGl how to interpret vertex data 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//Unbind VBO, then unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 
 	//Simple game logic:
 		//Process input
@@ -189,10 +216,14 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//Draw a triangle 
+		//Draw a rectangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		//Draw a triangle
+		glBindVertexArray(SecondTriangleVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
@@ -203,7 +234,9 @@ int main()
 
 	//De-allocate all resources
 	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &SecondTriangleVAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &SecondTriangleVBO);
 	glDeleteProgram(shaderProgram);
 
 	//Destroy the window
