@@ -79,9 +79,10 @@ int main()
 		"}\0";
 	const char* fragmentShaderSource = "#version 330 core\n"
 		"out vec4 FragColor;\n"
+		"uniform vec4 ourColor;\n"
 		"void main()\n"
 		"{\n"
-		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"   FragColor = ourColor;\n"
 		"}\n\0";
 
 	// build and compile our shader program
@@ -170,34 +171,6 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//Create a rectangle object and setup vertex input
-	float secondTriangleVertices[] = {
-		0.f, 0.f, 0.f, //Bottom left
-		1.f, 0.f, 0.f, //Bottom right
-		1.f, 1.f, 0.f, //Top right
-	};
-
-	unsigned int SecondTriangleVAO;
-	glGenVertexArrays(1, &SecondTriangleVAO);
-	unsigned int SecondTriangleVBO;
-	glGenBuffers(1, &SecondTriangleVBO);
-
-	//Bind the SecondTriangleVAO first
-	glBindVertexArray(SecondTriangleVAO);
-
-	//Bind the SecondTriangleVBO, next
-	glBindBuffer(GL_ARRAY_BUFFER, SecondTriangleVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangleVertices), secondTriangleVertices, GL_STATIC_DRAW);
-
-	//Finally, (Configure the vertex attribute) Tell OpenGl how to interpret vertex data 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	//Unbind VBO, then unbind VAO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-
 	//Simple game logic:
 		//Process input
 		//Update
@@ -213,18 +186,28 @@ int main()
 		if (game->bShouldGameRun == false) glfwSetWindowShouldClose(window, GLFW_TRUE);
 
 		//Render:
+		//Set background color
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//Draw a rectangle
+		//activate the shader program
 		glUseProgram(shaderProgram);
+
+		//Setup green channel value and store the uniform's location
+		float time = glfwGetTime();
+		float greenValue = (sin(time) / 2.0f) + 0.5f;
+		int uniformColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		
+		//Set the uniform value
+		glUniform4f(uniformColorLocation, 0.f, greenValue, 0.f, 1.f);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		//Draw a triangle
-		glBindVertexArray(SecondTriangleVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		//
+		//
 
 
 		//Swap buffers and poll input events
@@ -234,9 +217,7 @@ int main()
 
 	//De-allocate all resources
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteVertexArrays(1, &SecondTriangleVAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &SecondTriangleVBO);
 	glDeleteProgram(shaderProgram);
 
 	//Destroy the window
