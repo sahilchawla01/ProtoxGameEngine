@@ -43,9 +43,13 @@
     <None Include="src\shaders\xAxisUniformOffset.vert" />
     <None Include="src\shaders\simple-texture.vert" />
     <None Include="src\shaders\simple-texture.frag" />
+    <None Include="src\shaders\mix-texture.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\textures\awesomeface.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

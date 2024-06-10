@@ -82,6 +82,8 @@ int main()
 	Shader xAxisOffsetShader("src/shaders/xAxisUniformOffset.vert", "src/shaders/color-wheel.frag");
 	//Create and setup simple texture shader
 	Shader simpleTexShader("src/shaders/simple-texture.vert", "src/shaders/simple-texture.frag");
+	//Create and setup mixng texture shader
+	Shader mixTexShader("src/shaders/simple-texture.vert", "src/shaders/mix-texture.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
@@ -138,9 +140,11 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//Generate a texture object
+	//Generate a first texture object
 	unsigned int containerTextureId;
 	glGenTextures(1, &containerTextureId);
+	//Activate texture unit (texture location) before binding texture
+	glActiveTexture(GL_TEXTURE0);
 	//Bind texture to currently bound 2d Texture
 	glBindTexture(GL_TEXTURE_2D, containerTextureId);
 
@@ -149,6 +153,9 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//Flip y axis for images
+	stbi_set_flip_vertically_on_load(true);
 
 	//Load a sample texture
 	int width, height, nrChannels;
@@ -168,6 +175,43 @@ int main()
 	//Free image data
 	stbi_image_free(data);
 
+	//Generate a second texture object
+	unsigned int smileTexId;
+	glGenTextures(1, &smileTexId);
+	//Activate texture unit (texture location) before binding texture
+	glActiveTexture(GL_TEXTURE1);
+	//Bind texture to currently bound 2d Texture
+	glBindTexture(GL_TEXTURE_2D, smileTexId);
+
+	//Set the texture filtering mode for wrapping, and scaling
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//Load a second texture
+	unsigned char* smileTexData = stbi_load("assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+
+	if (smileTexData)
+	{
+		//Bind smileTexData (of texture) to GL_TEXTURE_2D
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, smileTexData);
+		//Generate the mipmaps 
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "\nError, couldn't load awesomeface.png" << std::endl;
+	}
+	//Free image smileTexData
+	stbi_image_free(smileTexData);
+
+
+	//activate the shader program
+	mixTexShader.use();
+	//Set texture unit values
+	mixTexShader.setInt("texture1", 0);
+	mixTexShader.setInt("texture2", 1);
 
 	//Simple game logic:
 		//Process input
@@ -190,10 +234,15 @@ int main()
 
 		//Draw a rectangle
 		// 
-		//activate the shader program
-		simpleTexShader.use();
 
+		//Bind textures to corresponding texture units
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, containerTextureId);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, smileTexId);
+
+		//Render container
+		mixTexShader.use();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

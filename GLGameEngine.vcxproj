@@ -153,12 +153,14 @@
   <ItemGroup>
     <None Include="src\shaders\color-wheel.frag" />
     <None Include="src\shaders\color-wheel.vert" />
+    <None Include="src\shaders\mix-texture.frag" />
     <None Include="src\shaders\simple-texture.frag" />
     <None Include="src\shaders\simple-texture.vert" />
     <None Include="src\shaders\vertically-invert.vert" />
     <None Include="src\shaders\xAxisUniformOffset.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets\textures\awesomeface.png" />
     <Image Include="assets\textures\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
