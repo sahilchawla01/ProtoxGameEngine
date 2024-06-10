@@ -28,5 +28,6 @@ public:
 private:
 	
 	double TimeElapsed = 0.f;
+	float MixTextureValue = 0.f;
 
 };
