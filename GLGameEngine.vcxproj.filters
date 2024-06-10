@@ -21,6 +21,9 @@
     <ClInclude Include="include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLGameEngine.cpp">
@@ -38,5 +41,12 @@
     <None Include="src\shaders\color-wheel.frag" />
     <None Include="src\shaders\vertically-invert.vert" />
     <None Include="src\shaders\xAxisUniformOffset.vert" />
+    <None Include="src\shaders\simple-texture.vert" />
+    <None Include="src\shaders\simple-texture.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

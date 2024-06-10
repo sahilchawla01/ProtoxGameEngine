@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="include\GLGameEngine.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
@@ -152,8 +153,13 @@
   <ItemGroup>
     <None Include="src\shaders\color-wheel.frag" />
     <None Include="src\shaders\color-wheel.vert" />
+    <None Include="src\shaders\simple-texture.frag" />
+    <None Include="src\shaders\simple-texture.vert" />
     <None Include="src\shaders\vertically-invert.vert" />
     <None Include="src\shaders\xAxisUniformOffset.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

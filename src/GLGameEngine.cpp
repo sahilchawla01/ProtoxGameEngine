@@ -1,5 +1,7 @@
 #include "GLGameEngine.h"
 #include <Shader.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 
 Game::Game()
@@ -78,13 +80,17 @@ int main()
 	Shader invertedColorWheelShader("src/shaders/vertically-invert.vert", "src/shaders/color-wheel.frag");
 	//Setup x-offset shader
 	Shader xAxisOffsetShader("src/shaders/xAxisUniformOffset.vert", "src/shaders/color-wheel.frag");
+	//Create and setup simple texture shader
+	Shader simpleTexShader("src/shaders/simple-texture.vert", "src/shaders/simple-texture.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
-		//positions								//colors
-		-0.5f, -0.5f, 0.f, /* Bottom left */ 1.f, 0.f, 0.f,
-		0.5f, -0.5f, 0.f, /* Bottom Right*/ 0.f, 1.f, 0.f,
-		0.f, 0.5f, 0.f, /* Top */ 0.f, 0.f, 1.f,
+		//positions								//colors		//texture coordinate
+		-0.5f, -0.5f, 0.f, /* Bottom left */ 1.f, 0.f, 0.f,		0.f, 0.f,
+		0.5f, -0.5f, 0.f, /* Bottom Right*/ 0.f, 1.f, 0.f,		1.f, 0.f,
+		-0.5f, 0.5f, 0.f, /* Top left*/ 0.f, 0.f, 1.f,			0.f, 1.f,
+		0.5f, 0.5f, 0.f, /* Top Right*/ 1.f, 1.f, 0.f,			1.f, 1.f,
+
 	};
 
 	unsigned int indices[] =
@@ -119,15 +125,49 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	//Finally, (Configure the vertex attribute) Tell OpenGl how to interpret vertex data 
 	//Configure vertex data
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//Configure color data
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	//Configure texture coordinate
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	//Unbind VBO, then unbind VAO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	//Generate a texture object
+	unsigned int containerTextureId;
+	glGenTextures(1, &containerTextureId);
+	//Bind texture to currently bound 2d Texture
+	glBindTexture(GL_TEXTURE_2D, containerTextureId);
+
+	//Set the texture filtering mode for wrapping, and scaling
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//Load a sample texture
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("assets/textures/container.jpg", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		//Bind data (of texture) to GL_TEXTURE_2D
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//Generate the mipmaps 
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "\nError, couldn't load container.jpg" << std::endl;
+	}
+	//Free image data
+	stbi_image_free(data);
+
 
 	//Simple game logic:
 		//Process input
@@ -151,16 +191,13 @@ int main()
 		//Draw a rectangle
 		// 
 		//activate the shader program
-		//colorWheelShader.use();
-		invertedColorWheelShader.use();
-		/*xAxisOffsetShader.use();
-		xAxisOffsetShader.setFloat("xOffset", 0.5f);*/
-		//colorWheelShader.setFloat("someUniform", 2.f);
+		simpleTexShader.use();
 
+		glBindTexture(GL_TEXTURE_2D, containerTextureId);
 		glBindVertexArray(VAO);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		//
 		//
 
