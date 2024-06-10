@@ -142,10 +142,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\GLGameEngine.h" />
+    <ClInclude Include="include\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\GLGameEngine.cpp" />
+    <ClCompile Include="src\helpers\Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\color-wheel.frag" />
+    <None Include="src\shaders\color-wheel.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

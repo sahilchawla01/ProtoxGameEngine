@@ -1,4 +1,5 @@
 #include "GLGameEngine.h"
+#include <Shader.h>
 
 
 Game::Game()
@@ -71,63 +72,8 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	const char* vertexShaderSource = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec3 aColor;\n"
-		"out vec3 newColor;"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"   newColor = aColor;\n"
-		"}\0";
-	const char* fragmentShaderSource = "#version 330 core\n"
-		"in vec3 newColor;\n"
-		"out vec4 FragColor;\n"
-		"uniform vec4 ourColor;\n"
-		"void main()\n"
-		"{\n"
-		"   FragColor = vec4(newColor, 1.0);\n"
-		"}\n\0";
-
-	// build and compile our shader program
-   // ------------------------------------
-   // vertex shader
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// fragment shader
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// link shaders
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	// check for linking errors
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	//Create and setup shader
+	Shader colorWheelShader("src/shaders/color-wheel.vert", "src/shaders/color-wheel.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
@@ -188,7 +134,7 @@ int main()
 		
 		//Update:
 		//Set elapsed time
-		game->SetTimeElapsedSinceLaunch(glfwGetTime());
+		game->SetTimeElapsedSinceLaunch(static_cast<int>(glfwGetTime()));
 
 		//If game should run is false, close the window
 		if (game->bShouldGameRun == false) glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -199,8 +145,10 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//Draw a rectangle
+		// 
 		//activate the shader program
-		glUseProgram(shaderProgram);
+		colorWheelShader.use();
+		//colorWheelShader.setFloat("someUniform", 2.f);
 
 		//Setup green channel value and store the uniform's location
 		//float time = glfwGetTime();
@@ -226,7 +174,6 @@ int main()
 	//De-allocate all resources
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
 
 	//Destroy the window
 	glfwDestroyWindow(window);

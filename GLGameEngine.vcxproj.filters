@@ -18,6 +18,9 @@
     <ClInclude Include="include\GLGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLGameEngine.cpp">
@@ -26,5 +29,12 @@
     <ClCompile Include="src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\helpers\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\color-wheel.vert" />
+    <None Include="src\shaders\color-wheel.frag" />
   </ItemGroup>
 </Project>
