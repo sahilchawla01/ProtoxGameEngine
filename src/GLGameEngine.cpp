@@ -72,15 +72,19 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	//Create and setup shader
+	//Create and setup color wheel shader
 	Shader colorWheelShader("src/shaders/color-wheel.vert", "src/shaders/color-wheel.frag");
+	//Setup inverted triangle shader
+	Shader invertedColorWheelShader("src/shaders/vertically-invert.vert", "src/shaders/color-wheel.frag");
+	//Setup x-offset shader
+	Shader xAxisOffsetShader("src/shaders/xAxisUniformOffset.vert", "src/shaders/color-wheel.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
 		//positions								//colors
 		-0.5f, -0.5f, 0.f, /* Bottom left */ 1.f, 0.f, 0.f,
-		0.f, -0.5f, 0.f, /* Bottom Right*/ 0.f, 1.f, 0.f,
-		-0.5f, 0.5f, 0.f, /* Top Left */ 0.f, 0.f, 1.f,
+		0.5f, -0.5f, 0.f, /* Bottom Right*/ 0.f, 1.f, 0.f,
+		0.f, 0.5f, 0.f, /* Top */ 0.f, 0.f, 1.f,
 	};
 
 	unsigned int indices[] =
@@ -147,16 +151,11 @@ int main()
 		//Draw a rectangle
 		// 
 		//activate the shader program
-		colorWheelShader.use();
+		//colorWheelShader.use();
+		invertedColorWheelShader.use();
+		/*xAxisOffsetShader.use();
+		xAxisOffsetShader.setFloat("xOffset", 0.5f);*/
 		//colorWheelShader.setFloat("someUniform", 2.f);
-
-		//Setup green channel value and store the uniform's location
-		//float time = glfwGetTime();
-		//float greenValue = (sin(time) / 2.0f) + 0.5f;
-		//int uniformColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		//Set the uniform value
-		//glUniform4f(uniformColorLocation, 0.f, greenValue, 0.f, 1.f);
-		
 
 		glBindVertexArray(VAO);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

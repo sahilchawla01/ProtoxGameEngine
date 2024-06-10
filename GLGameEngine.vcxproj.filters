@@ -36,5 +36,7 @@
   <ItemGroup>
     <None Include="src\shaders\color-wheel.vert" />
     <None Include="src\shaders\color-wheel.frag" />
+    <None Include="src\shaders\vertically-invert.vert" />
+    <None Include="src\shaders\xAxisUniformOffset.vert" />
   </ItemGroup>
 </Project>
