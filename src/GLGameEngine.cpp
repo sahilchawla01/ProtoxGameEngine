@@ -1,8 +1,5 @@
 #include "GLGameEngine.h"
 #include <Shader.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -19,8 +16,32 @@ Game::Game(GLFWwindow** wndPtr)
 
 void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) 
+	//Get game pointer
+	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	else if (key == GLFW_KEY_W && action == GLFW_REPEAT)
+	{
+		//To move camera forward, level should go towards the screen (i.e towards +ve Z axis)
+		gamePtr->TranslateViewMatrix(glm::vec3(0.f, 0.f, gamePtr->cameraStep * gamePtr->cameraSpeed));
+	}
+	else if (key == GLFW_KEY_S && action == GLFW_REPEAT)
+	{
+		//Change view matrix to move backward (i.e towards -ve Z axis)
+		gamePtr->TranslateViewMatrix(glm::vec3(0.f, 0.f, -1.f * gamePtr->cameraStep * gamePtr->cameraSpeed));
+	} 
+	else if (key == GLFW_KEY_D && action == GLFW_REPEAT)
+	{
+		//To move camera right, level should go left of the screen (i.e towards -ve X axis)
+		gamePtr->TranslateViewMatrix(glm::vec3(-1.f * gamePtr->cameraStep * gamePtr->cameraSpeed, 0.f, 0.f));
+	}
+	else if (key == GLFW_KEY_A && action == GLFW_REPEAT)
+	{
+		//To move camera left, level should go right of the screen (i.e towards -ve X axis)
+		gamePtr->TranslateViewMatrix(glm::vec3(gamePtr->cameraStep * gamePtr->cameraSpeed, 0.f, 0.f));
+	}
+		
 }
 
 void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -42,6 +63,20 @@ void Game::InitialiseGame()
 {
 	//Store window size 
 	glfwGetWindowSize(*windowPointer, &windowWidth, &windowHeight);
+
+	//Setup view matrix (camera pos) to starting position
+	TranslateViewMatrix(startCameraPosition);
+}
+
+glm::mat4 Game::GetViewMatrix()
+{
+	return viewMatrix;
+}
+
+void Game::TranslateViewMatrix(glm::vec3 translateVector)
+{
+	//take current view matrix and translate it by the given vector
+	viewMatrix = glm::translate(viewMatrix, translateVector);
 }
 
 void ErrorCallback(int error, const char* description)
@@ -85,9 +120,11 @@ int main()
 
 	//Create the game object
 	Game* game = new Game(&window);
+	//Store pointer to game on window
+	glfwSetWindowUserPointer(window, game);
 
 	//Set key callback which is called whenever a key is pressed
-	glfwSetKeyCallback(window, game->InputKeyCallback);
+	glfwSetKeyCallback(window, Game::InputKeyCallback);
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
@@ -317,8 +354,8 @@ int main()
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
 
-		glm::mat4 viewMatrix = glm::mat4(1.f);
-		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.f, 0.f, -3.f));
+		/*glm::mat4 viewMatrix = glm::mat4(1.f);
+		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.f, 0.f, -3.f));*/
 
 		glm::mat4 projectionMatrix = glm::mat4(1.f);
 		projectionMatrix = glm::perspective(glm::radians(45.f), static_cast<float>(game->windowWidth / game->windowHeight), 0.1f, 100.f);
@@ -339,7 +376,7 @@ int main()
 			model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
-			mvpMatrix = projectionMatrix * viewMatrix * model;
+			mvpMatrix = projectionMatrix * game->GetViewMatrix() * model;
 
 			unsigned int mvpUniLocation = glGetUniformLocation(mixTexShader.ID, "mvp");
 			//Provide MVP matrix to the vertex shader
