@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\src">
+      <UniqueIdentifier>{61a3a2fa-19fe-4910-a286-654f740431ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLGameEngine.h">
@@ -44,6 +47,7 @@
     <None Include="src\shaders\simple-texture.vert" />
     <None Include="src\shaders\simple-texture.frag" />
     <None Include="src\shaders\mix-texture.frag" />
+    <None Include="src\shaders\mix-texture-transform.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">

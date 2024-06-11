@@ -1,5 +1,8 @@
 #include "GLGameEngine.h"
 #include <Shader.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -74,16 +77,8 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	//Create and setup color wheel shader
-	Shader colorWheelShader("src/shaders/color-wheel.vert", "src/shaders/color-wheel.frag");
-	//Setup inverted triangle shader
-	Shader invertedColorWheelShader("src/shaders/vertically-invert.vert", "src/shaders/color-wheel.frag");
-	//Setup x-offset shader
-	Shader xAxisOffsetShader("src/shaders/xAxisUniformOffset.vert", "src/shaders/color-wheel.frag");
-	//Create and setup simple texture shader
-	Shader simpleTexShader("src/shaders/simple-texture.vert", "src/shaders/simple-texture.frag");
 	//Create and setup mixng texture shader
-	Shader mixTexShader("src/shaders/simple-texture.vert", "src/shaders/mix-texture.frag");
+	Shader mixTexShader("src/shaders/mix-texture-transform.vert", "src/shaders/mix-texture.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
@@ -206,12 +201,14 @@ int main()
 	//Free image smileTexData
 	stbi_image_free(smileTexData);
 
-
 	//activate the shader program
 	mixTexShader.use();
 	//Set texture unit values
 	mixTexShader.setInt("texture1", 0);
 	mixTexShader.setInt("texture2", 1);
+	
+
+	
 
 	//Simple game logic:
 		//Process input
@@ -243,6 +240,16 @@ int main()
 
 		//Render container
 		mixTexShader.use();
+
+		//Make identity matrix
+		glm::mat4 trans = glm::mat4(1.f);
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.f));
+		trans = glm::rotate(trans, glm::radians((float)glfwGetTime() * 20.f * -1.f), glm::vec3(0.f, 0.f, 1.f));
+
+		//Set new rotate value
+		unsigned int transformUniLocation = glGetUniformLocation(mixTexShader.ID, "transform");
+		glUniformMatrix4fv(transformUniLocation, 1, GL_FALSE, glm::value_ptr(trans));
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
