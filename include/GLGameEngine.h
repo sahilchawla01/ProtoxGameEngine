@@ -14,20 +14,30 @@ class Game
 {
 
 public:
-	Game();
+	Game(GLFWwindow** windowPointer);
 
 	static void InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+	double GetTimeElapsedSinceLaunch();
+	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
+
+	void InitialiseGame();
 
 public: 
 	bool bShouldGameRun = true;
 
-	double GetTimeElapsedSinceLaunch();
-	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
+
+	//GLFW related variables
+	int windowWidth;
+	int windowHeight;
 
 private:
 	
 	double TimeElapsed = 0.f;
 	float MixTextureValue = 0.f;
+
+private:
+
+	GLFWwindow** windowPointer = nullptr;
 
 };

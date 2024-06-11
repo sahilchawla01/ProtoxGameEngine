@@ -48,6 +48,7 @@
     <None Include="src\shaders\simple-texture.frag" />
     <None Include="src\shaders\mix-texture.frag" />
     <None Include="src\shaders\mix-texture-transform.vert" />
+    <None Include="src\shaders\mix-texture-mvp.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">

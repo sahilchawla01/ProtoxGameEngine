@@ -7,9 +7,14 @@
 #include <stb_image.h>
 
 
-Game::Game()
+Game::Game(GLFWwindow** wndPtr)
 {
 	bShouldGameRun = true;
+
+	//Store pointer to window
+	windowPointer = wndPtr;
+
+	InitialiseGame();
 }
 
 void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -31,6 +36,12 @@ double Game::GetTimeElapsedSinceLaunch()
 void Game::SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch)
 {
 	TimeElapsed = TimeElapsedSinceLaunch;
+}
+
+void Game::InitialiseGame()
+{
+	//Store window size 
+	glfwGetWindowSize(*windowPointer, &windowWidth, &windowHeight);
 }
 
 void ErrorCallback(int error, const char* description)
@@ -70,7 +81,7 @@ int main()
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	//Create the game object
-	Game* game = new Game();
+	Game* game = new Game(&window);
 
 	//Set key callback which is called whenever a key is pressed
 	glfwSetKeyCallback(window, game->InputKeyCallback);
@@ -78,7 +89,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
 	//Create and setup mixng texture shader
-	Shader mixTexShader("src/shaders/mix-texture-transform.vert", "src/shaders/mix-texture.frag");
+	Shader mixTexShader("src/shaders/mix-texture-mvp.vert", "src/shaders/mix-texture.frag");
 
 	//Create a rectangle object and setup vertex input
 	float vertices[] = {
@@ -241,28 +252,25 @@ int main()
 		//Render container
 		mixTexShader.use();
 
-		//Make identity matrix
-		glm::mat4 trans = glm::mat4(1.f);
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.f));
-		trans = glm::rotate(trans, glm::radians((float)glfwGetTime() * 20.f * -1.f), glm::vec3(0.f, 0.f, 1.f));
 
-		//Set new rotate value
-		unsigned int transformUniLocation = glGetUniformLocation(mixTexShader.ID, "transform");
-		glUniformMatrix4fv(transformUniLocation, 1, GL_FALSE, glm::value_ptr(trans));
+		glm::mat4 model = glm::mat4(1.f);
+		model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
+
+		glm::mat4 viewMatrix = glm::mat4(1.f);
+		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.f, 0.f, -3.f));
+
+		glm::mat4 projectionMatrix = glm::mat4(1.f);
+		projectionMatrix = glm::perspective(glm::radians(45.f), static_cast<float>(game->windowWidth / game->windowHeight), 0.1f, 100.f);
+
+		glm::mat4 mvpMatrix = glm::mat4(1.f);
+		mvpMatrix = projectionMatrix * viewMatrix * model;
+
+		unsigned int mvpUniLocation = glGetUniformLocation(mixTexShader.ID, "mvp");
+		//Provide MVP matrix to the vertex shader
+		glUniformMatrix4fv(mvpUniLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
 
 		//Draw first object
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		//Redefine matrix
-		trans = glm::mat4(1.f);
-		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.f));
-		trans = glm::scale(trans, glm::vec3(sin(glfwGetTime())));
-		//Update uniform 
-		glUniformMatrix4fv(transformUniLocation, 1, GL_FALSE, glm::value_ptr(trans));
-
-
-		//Draw second object
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
