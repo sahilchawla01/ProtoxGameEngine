@@ -250,7 +250,19 @@ int main()
 		unsigned int transformUniLocation = glGetUniformLocation(mixTexShader.ID, "transform");
 		glUniformMatrix4fv(transformUniLocation, 1, GL_FALSE, glm::value_ptr(trans));
 
+		//Draw first object
 		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		//Redefine matrix
+		trans = glm::mat4(1.f);
+		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.f));
+		trans = glm::scale(trans, glm::vec3(sin(glfwGetTime())));
+		//Update uniform 
+		glUniformMatrix4fv(transformUniLocation, 1, GL_FALSE, glm::value_ptr(trans));
+
+
+		//Draw second object
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
