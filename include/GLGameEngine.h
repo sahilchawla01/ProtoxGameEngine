@@ -24,6 +24,7 @@ public:
 	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
 
 	void InitialiseGame();
+	void SetViewMatrix(glm::highp_mat4 newViewMatrix);
 	glm::mat4 GetViewMatrix();
 
 public: 

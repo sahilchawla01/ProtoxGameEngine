@@ -66,6 +66,23 @@ void Game::InitialiseGame()
 
 	//Setup view matrix (camera pos) to starting position
 	TranslateViewMatrix(startCameraPosition);
+
+	//Let's say camera target is 0, 0, 0
+	glm::vec3 cameraTarget = glm::vec3(0, 0, 0);
+	glm::vec3 cameraDirection = glm::normalize(startCameraPosition - cameraTarget);
+
+	glm::vec3 upVector = glm::vec3(0.f, 1.f, 0.f);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(upVector, cameraDirection));
+
+	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
+
+	//create a look at matrix
+	glm::mat4 view;
+	view = glm::lookAt(
+		startCameraPosition,
+		cameraTarget,
+		cameraUp
+	);
 }
 
 glm::mat4 Game::GetViewMatrix()
@@ -77,6 +94,11 @@ void Game::TranslateViewMatrix(glm::vec3 translateVector)
 {
 	//take current view matrix and translate it by the given vector
 	viewMatrix = glm::translate(viewMatrix, translateVector);
+}
+
+void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)
+{
+	viewMatrix = newViewMatrix;
 }
 
 void ErrorCallback(int error, const char* description)
@@ -354,9 +376,6 @@ int main()
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
 
-		/*glm::mat4 viewMatrix = glm::mat4(1.f);
-		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.f, 0.f, -3.f));*/
-
 		glm::mat4 projectionMatrix = glm::mat4(1.f);
 		projectionMatrix = glm::perspective(glm::radians(45.f), static_cast<float>(game->windowWidth / game->windowHeight), 0.1f, 100.f);
 
@@ -367,6 +386,7 @@ int main()
 
 		for (int i = 0; i < 10; i++)
 		{
+			//Change object position through model matrix
 			model = glm::mat4(1.f);
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 10.f * i;
@@ -375,6 +395,13 @@ int main()
 
 			model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
 
+			//Change view matrix
+			const float radius = 10.0f;
+			float camX = sin(glfwGetTime()) * radius;
+			float camZ = cos(glfwGetTime()) * radius;
+			game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));
+
+			//Create MVP matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
 			mvpMatrix = projectionMatrix * game->GetViewMatrix() * model;
 
