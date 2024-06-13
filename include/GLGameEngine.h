@@ -28,6 +28,12 @@ public:
 	void SetViewMatrix(glm::highp_mat4 newViewMatrix);
 	glm::mat4 GetViewMatrix();
 
+	//Game global variables functions
+	void SetDeltaTime(float DeltaTime);
+	float GetDeltaTime() { return deltaTime; };
+	void SetLastFrameTime(float LastFrameTime);
+	float GetLastFrameTime() { return lastFrame; };
+
 public: 
 	bool bShouldGameRun = true;
 
@@ -49,8 +55,13 @@ private:
 	glm::vec3 cameraFront = glm::vec3(0.f, 0.f, -1.f);
 	glm::vec3 cameraUp = glm::vec3(0.f, 1.f, 0.f);
 
-	float cameraSpeed = 1.f;
+	float cameraSpeed = 5.f;
 
+	// -- Global variables --
+	//Time elapsed between last and current frame
+	float deltaTime = 0.f; 
+	//Time elapsed until last frame
+	float lastFrame = 0.f;
 	
 	void TranslateViewMatrix(glm::vec3 translateVector);
 	void SetCameraPosition(glm::vec3 newCameraPosition);

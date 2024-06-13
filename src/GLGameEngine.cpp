@@ -42,22 +42,22 @@ void Game::ProcessInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		glm::vec3 newCamPos = currentCameraPosition + cameraSpeed * cameraFront;
+		glm::vec3 newCamPos = currentCameraPosition + (cameraSpeed * deltaTime) * cameraFront;
 		SetCameraPosition(newCamPos);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		glm::vec3 newCamPos = currentCameraPosition - cameraSpeed * cameraFront;
+		glm::vec3 newCamPos = currentCameraPosition - (cameraSpeed * deltaTime) * cameraFront;
 		SetCameraPosition(newCamPos);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
 	}
 }
@@ -75,6 +75,16 @@ void Game::InitialiseGame()
 glm::mat4 Game::GetViewMatrix()
 {
 	return viewMatrix;
+}
+
+void Game::SetDeltaTime(float DeltaTime)
+{
+	deltaTime = DeltaTime;
+}
+
+void Game::SetLastFrameTime(float LastFrameTime)
+{
+	lastFrame = LastFrameTime;
 }
 
 void Game::TranslateViewMatrix(glm::vec3 translateVector)
@@ -344,9 +354,12 @@ int main()
 		//----------
 		game->ProcessInput(window);
 		
-		//Update:
-		//Set elapsed time
-		game->SetTimeElapsedSinceLaunch(static_cast<int>(glfwGetTime()));
+		// -- Update --
+		//Set elapsed time and delta time
+		float currentTime = glfwGetTime();
+		game->SetTimeElapsedSinceLaunch(static_cast<int>(currentTime));
+		game->SetDeltaTime(currentTime - game->GetLastFrameTime());
+		game->SetLastFrameTime(currentTime);
 
 		//If game should run is false, close the window
 		if (game->bShouldGameRun == false) glfwSetWindowShouldClose(window, GLFW_TRUE);
