@@ -20,28 +20,7 @@ void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int actio
 	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	else if (key == GLFW_KEY_W && action == GLFW_REPEAT)
-	{
-		//To move camera forward, level should go towards the screen (i.e towards +ve Z axis)
-		gamePtr->TranslateViewMatrix(glm::vec3(0.f, 0.f, gamePtr->cameraStep * gamePtr->cameraSpeed));
-	}
-	else if (key == GLFW_KEY_S && action == GLFW_REPEAT)
-	{
-		//Change view matrix to move backward (i.e towards -ve Z axis)
-		gamePtr->TranslateViewMatrix(glm::vec3(0.f, 0.f, -1.f * gamePtr->cameraStep * gamePtr->cameraSpeed));
-	} 
-	else if (key == GLFW_KEY_D && action == GLFW_REPEAT)
-	{
-		//To move camera right, level should go left of the screen (i.e towards -ve X axis)
-		gamePtr->TranslateViewMatrix(glm::vec3(-1.f * gamePtr->cameraStep * gamePtr->cameraSpeed, 0.f, 0.f));
-	}
-	else if (key == GLFW_KEY_A && action == GLFW_REPEAT)
-	{
-		//To move camera left, level should go right of the screen (i.e towards -ve X axis)
-		gamePtr->TranslateViewMatrix(glm::vec3(gamePtr->cameraStep * gamePtr->cameraSpeed, 0.f, 0.f));
-	}
-		
+		glfwSetWindowShouldClose(window, GLFW_TRUE);	
 }
 
 void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -59,30 +38,38 @@ void Game::SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch)
 	TimeElapsed = TimeElapsedSinceLaunch;
 }
 
+void Game::ProcessInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		glm::vec3 newCamPos = currentCameraPosition + cameraSpeed * cameraFront;
+		SetCameraPosition(newCamPos);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		glm::vec3 newCamPos = currentCameraPosition - cameraSpeed * cameraFront;
+		SetCameraPosition(newCamPos);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		SetCameraPosition(newCamPos);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		SetCameraPosition(newCamPos);
+	}
+}
+
 void Game::InitialiseGame()
 {
 	//Store window size 
 	glfwGetWindowSize(*windowPointer, &windowWidth, &windowHeight);
 
 	//Setup view matrix (camera pos) to starting position
-	TranslateViewMatrix(startCameraPosition);
-
-	//Let's say camera target is 0, 0, 0
-	glm::vec3 cameraTarget = glm::vec3(0, 0, 0);
-	glm::vec3 cameraDirection = glm::normalize(startCameraPosition - cameraTarget);
-
-	glm::vec3 upVector = glm::vec3(0.f, 1.f, 0.f);
-	glm::vec3 cameraRight = glm::normalize(glm::cross(upVector, cameraDirection));
-
-	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
-
-	//create a look at matrix
-	glm::mat4 view;
-	view = glm::lookAt(
-		startCameraPosition,
-		cameraTarget,
-		cameraUp
-	);
+	//TranslateViewMatrix(startCameraPosition);
+	SetCameraPosition(startCameraPosition);
 }
 
 glm::mat4 Game::GetViewMatrix()
@@ -94,6 +81,12 @@ void Game::TranslateViewMatrix(glm::vec3 translateVector)
 {
 	//take current view matrix and translate it by the given vector
 	viewMatrix = glm::translate(viewMatrix, translateVector);
+}
+
+void Game::SetCameraPosition(glm::vec3 newCameraPosition)
+{
+	currentCameraPosition = newCameraPosition;
+	viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
 }
 
 void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)
@@ -346,6 +339,10 @@ int main()
 		//Render
 	while (!glfwWindowShouldClose(window)) //Game loop
 	{
+
+		//Input
+		//----------
+		game->ProcessInput(window);
 		
 		//Update:
 		//Set elapsed time
@@ -396,10 +393,10 @@ int main()
 			model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
 
 			//Change view matrix
-			const float radius = 10.0f;
+			/*const float radius = 10.0f;
 			float camX = sin(glfwGetTime()) * radius;
 			float camZ = cos(glfwGetTime()) * radius;
-			game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));
+			game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));*/
 
 			//Create MVP matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);

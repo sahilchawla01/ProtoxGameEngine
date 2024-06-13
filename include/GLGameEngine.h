@@ -22,6 +22,7 @@ public:
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 	double GetTimeElapsedSinceLaunch();
 	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
+	void ProcessInput(GLFWwindow* window);
 
 	void InitialiseGame();
 	void SetViewMatrix(glm::highp_mat4 newViewMatrix);
@@ -44,11 +45,15 @@ private:
 	//Camera variables and functions
 	glm::mat4 viewMatrix = glm::mat4(1.f);
 	glm::vec3 currentCameraPosition = glm::vec3(0.f);
-	glm::vec3 startCameraPosition = glm::vec3(0.f, 0.f, -10.f);
-	float cameraStep = 0.5f;
+	glm::vec3 startCameraPosition = glm::vec3(0.f, 0.f, 10.f);
+	glm::vec3 cameraFront = glm::vec3(0.f, 0.f, -1.f);
+	glm::vec3 cameraUp = glm::vec3(0.f, 1.f, 0.f);
+
 	float cameraSpeed = 1.f;
 
+	
 	void TranslateViewMatrix(glm::vec3 translateVector);
+	void SetCameraPosition(glm::vec3 newCameraPosition);
 
 	GLFWwindow** windowPointer = nullptr;
 
