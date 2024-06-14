@@ -16,9 +16,6 @@ Game::Game(GLFWwindow** wndPtr)
 
 void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//Get game pointer
-	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
-
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);	
 }
@@ -26,6 +23,40 @@ void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int actio
 void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void Game::MouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	//Get game pointer
+	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
+
+	//Calculate offset since previous
+	float xOffset = gamePtr->lastX - xpos;
+	float yOffset = gamePtr->lastY - ypos;
+
+	//Factor in camera sensitivity
+	xOffset *= gamePtr->cameraSensitivity;
+	yOffset *= gamePtr->cameraSensitivity;
+
+	//Add offset values to camera's rotation
+	glm::vec3 currentRot = gamePtr->GetCameraRotation();
+	float newPitch = currentRot.y + yOffset;
+	float newYaw = currentRot.z + xOffset;
+
+	//Constraint looking up and down beyond 89 degrees
+	if (newPitch > 89.f) newPitch = 89.f;
+	else if (newPitch < -89.f) newPitch = -89.f;
+
+	//Calculate direction vector that camera now looks at
+	glm::vec3 direction(0.f, 0.f, 0.f);
+	direction.x = cos(glm::radians(newYaw)) * cos(glm::radians(newPitch));
+	direction.y = sin(glm::radians(newPitch));
+	direction.z = sin(glm::radians(newYaw)) * cos(glm::radians(newPitch));
+	direction = glm::normalize(direction);
+
+	//Set camera's new rotation
+	gamePtr->SetCameraRotation(direction);
+
 }
 
 double Game::GetTimeElapsedSinceLaunch()
@@ -70,6 +101,10 @@ void Game::InitialiseGame()
 	//Setup view matrix (camera pos) to starting position
 	//TranslateViewMatrix(startCameraPosition);
 	SetCameraPosition(startCameraPosition);
+	
+	//Setup lastX and lastY coords to be middle of the window
+	lastX = static_cast<float>(windowWidth / 2);
+	lastY = static_cast<float>(windowHeight / 2);
 }
 
 glm::mat4 Game::GetViewMatrix()
@@ -87,10 +122,21 @@ void Game::SetLastFrameTime(float LastFrameTime)
 	lastFrame = LastFrameTime;
 }
 
+void Game::SetCameraRotation(glm::vec3 newCameraRotation)
+{
+	cameraFront = newCameraRotation;
+}
+
 void Game::TranslateViewMatrix(glm::vec3 translateVector)
 {
 	//take current view matrix and translate it by the given vector
 	viewMatrix = glm::translate(viewMatrix, translateVector);
+}
+
+
+void Game::AddToCameraRotation(glm::vec3 rotationToAdd)
+{
+	cameraRotation += rotationToAdd;
 }
 
 void Game::SetCameraPosition(glm::vec3 newCameraPosition)
@@ -148,8 +194,12 @@ int main()
 	//Store pointer to game on window
 	glfwSetWindowUserPointer(window, game);
 
+	//Enable mouse 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	//Set key callback which is called whenever a key is pressed
 	glfwSetKeyCallback(window, Game::InputKeyCallback);
+	//Set mouse callback
+	glfwSetCursorPosCallback(window, Game::MouseCallback);
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 

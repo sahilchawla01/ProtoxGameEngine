@@ -20,6 +20,7 @@ public:
 
 	static void InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+	static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
 	double GetTimeElapsedSinceLaunch();
 	void SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch);
 	void ProcessInput(GLFWwindow* window);
@@ -33,6 +34,7 @@ public:
 	float GetDeltaTime() { return deltaTime; };
 	void SetLastFrameTime(float LastFrameTime);
 	float GetLastFrameTime() { return lastFrame; };
+
 
 public: 
 	bool bShouldGameRun = true;
@@ -54,17 +56,31 @@ private:
 	glm::vec3 startCameraPosition = glm::vec3(0.f, 0.f, 10.f);
 	glm::vec3 cameraFront = glm::vec3(0.f, 0.f, -1.f);
 	glm::vec3 cameraUp = glm::vec3(0.f, 1.f, 0.f);
+	//The camera rotation is represented in the order ZYX (Roll, Pitch , Yaw)
+	glm::vec3 cameraRotation = glm::vec3(0.f, 0.f, 0.f);
+	//The last position of the mouse on the X axis
+	float lastX = 400.f;
+	//The last position of the mouse on the y axis
+	float lastY = 400.f;
+	bool bHasCameraMoved = false;
 
 	float cameraSpeed = 5.f;
+	float cameraSensitivity = 0.5f;
 
 	// -- Global variables --
 	//Time elapsed between last and current frame
 	float deltaTime = 0.f; 
 	//Time elapsed until last frame
 	float lastFrame = 0.f;
-	
+
+	//Camera functions
 	void TranslateViewMatrix(glm::vec3 translateVector);
+	void SetCameraRotation(glm::vec3 newCameraRotation);
+	//The camera rotation is represented in the order ZYX (Roll, Pitch , Yaw)
+	void AddToCameraRotation(glm::vec3 rotationToAdd);
+	//The camera rotation is represented in the order ZYX(Roll, Pitch, Yaw)
 	void SetCameraPosition(glm::vec3 newCameraPosition);
+	glm::vec3 GetCameraRotation() { return cameraRotation; };
 
 	GLFWwindow** windowPointer = nullptr;
 
