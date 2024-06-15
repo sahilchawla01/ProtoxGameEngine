@@ -16,8 +16,22 @@ Game::Game(GLFWwindow** wndPtr)
 
 void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	//Get game pointer
+	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);	
+	//--  Handle fast camera -- 
+	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
+	{
+		std::cout << "\nEnable fast camera";
+		gamePtr->EnableFastCamera();
+	}
+	else if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
+	{
+		std::cout << "\nDisable fast camera";
+		gamePtr->DisableFastCamera();
+	}
 }
 
 void Game::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -80,22 +94,24 @@ void Game::SetTimeElapsedSinceLaunch(int TimeElapsedSinceLaunch)
 
 void Game::ProcessInput(GLFWwindow* window)
 {
+
+	//-- Handle WASD movement for camera  --
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition + (cameraSpeed * deltaTime) * cameraFront;
 		SetCameraPosition(newCamPos);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition - (cameraSpeed * deltaTime) * cameraFront;
 		SetCameraPosition(newCamPos);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
@@ -128,6 +144,7 @@ void Game::SetLastFrameTime(float LastFrameTime)
 
 void Game::UpdateViewMatrix()
 {
+	//The new view matrix is based on the 3 coordinate system with the camera at the center, using the cameraUp direction, camera front direction and currentCamera position
 	viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
 }
 
@@ -153,8 +170,6 @@ void Game::InitialiseCamera()
 	//TranslateViewMatrix(startCameraPosition);
 	SetCameraPosition(startCameraPosition);
 
-	
-
 	//Setup lastX and lastY coords to be middle of the window
 	/*lastX = static_cast<float>(windowWidth / 2);
 	lastY = static_cast<float>(windowHeight / 2);*/
@@ -171,6 +186,18 @@ void Game::SetCameraPosition(glm::vec3 newCameraPosition)
 	currentCameraPosition = newCameraPosition;
 	//Update the view matrix with the new camera position
 	UpdateViewMatrix();
+}
+
+void Game::EnableFastCamera()
+{
+	//Increase camera speed 
+	cameraSpeed *= fastCameraSpeedMultiplier;
+}
+
+void Game::DisableFastCamera()
+{
+	//Decrease camera speed back to default
+	cameraSpeed /= fastCameraSpeedMultiplier;
 }
 
 void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)

@@ -49,6 +49,11 @@ private:
 	double TimeElapsed = 0.f;
 
 private:
+	// -- Global variables --
+	//Time elapsed between last and current frame
+	float deltaTime = 0.f; 
+	//Time elapsed until last frame
+	float lastFrame = 0.f;
 
 	//Camera variables and functions
 	glm::mat4 viewMatrix = glm::mat4(1.f);
@@ -67,17 +72,13 @@ private:
 	bool bHasCameraMoved = false;
 
 	float cameraSpeed = 5.f;
+	float fastCameraSpeedMultiplier = 2.5f;
 	float cameraSensitivity = 0.1f;
 
-	// -- Global variables --
-	//Time elapsed between last and current frame
-	float deltaTime = 0.f; 
-	//Time elapsed until last frame
-	float lastFrame = 0.f;
-
 	//Camera functions
-	void TranslateViewMatrix(glm::vec3 translateVector);
 	void InitialiseCamera();
+	//
+	void TranslateViewMatrix(glm::vec3 translateVector);
 	//Update the current view matrix to its new values
 	void UpdateViewMatrix();
 	void SetCameraRotation(glm::vec3 newCameraRotation);
@@ -86,6 +87,11 @@ private:
 	//The camera rotation is represented in the order ZYX(Roll, Pitch, Yaw)
 	void SetCameraPosition(glm::vec3 newCameraPosition);
 	glm::vec3 GetCameraRotation() { return cameraRotation; };
+
+	//Increases speed of camera movement
+	void EnableFastCamera();
+	//Returns speed of camera movement to default
+	void DisableFastCamera();
 
 	GLFWwindow** windowPointer = nullptr;
 
