@@ -30,28 +30,37 @@ void Game::MouseCallback(GLFWwindow* window, double xpos, double ypos)
 	//Get game pointer
 	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
 
+	//If mouse hasn't moved since start of the window
+	if (!gamePtr->bHasCameraMoved)
+	{
+		gamePtr->lastX = xpos;
+		gamePtr->lastY = ypos;
+		gamePtr->bHasCameraMoved = true;
+	}
 	//Calculate offset since previous
-	float xOffset = gamePtr->lastX - xpos;
+	float xOffset = xpos - gamePtr->lastX;
 	float yOffset = gamePtr->lastY - ypos;
+	//Store last x and y values
+	gamePtr->lastX = xpos;
+	gamePtr->lastY = ypos;
 
 	//Factor in camera sensitivity
 	xOffset *= gamePtr->cameraSensitivity;
 	yOffset *= gamePtr->cameraSensitivity;
 
 	//Add offset values to camera's rotation
-	glm::vec3 currentRot = gamePtr->GetCameraRotation();
-	float newPitch = currentRot.y + yOffset;
-	float newYaw = currentRot.z + xOffset;
+	gamePtr->cameraPitch += yOffset;
+	gamePtr->cameraYaw += xOffset;
 
 	//Constraint looking up and down beyond 89 degrees
-	if (newPitch > 89.f) newPitch = 89.f;
-	else if (newPitch < -89.f) newPitch = -89.f;
+	if (gamePtr->cameraPitch > 89.f) gamePtr->cameraPitch = 89.f;
+	else if (gamePtr->cameraPitch < -89.f) gamePtr->cameraPitch = -89.f;
 
-	//Calculate direction vector that camera now looks at
+	//Calculate direction vector that gamePtr->camera now looks at 
 	glm::vec3 direction(0.f, 0.f, 0.f);
-	direction.x = cos(glm::radians(newYaw)) * cos(glm::radians(newPitch));
-	direction.y = sin(glm::radians(newPitch));
-	direction.z = sin(glm::radians(newYaw)) * cos(glm::radians(newPitch));
+	direction.x = cos(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
+	direction.y = sin(glm::radians(gamePtr->cameraPitch));
+	direction.z = sin(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
 	direction = glm::normalize(direction);
 
 	//Set camera's new rotation
@@ -98,13 +107,8 @@ void Game::InitialiseGame()
 	//Store window size 
 	glfwGetWindowSize(*windowPointer, &windowWidth, &windowHeight);
 
-	//Setup view matrix (camera pos) to starting position
-	//TranslateViewMatrix(startCameraPosition);
-	SetCameraPosition(startCameraPosition);
-	
-	//Setup lastX and lastY coords to be middle of the window
-	lastX = static_cast<float>(windowWidth / 2);
-	lastY = static_cast<float>(windowHeight / 2);
+	//Setup init camera pos, rot, etc.
+	InitialiseCamera();
 }
 
 glm::mat4 Game::GetViewMatrix()
@@ -122,15 +126,38 @@ void Game::SetLastFrameTime(float LastFrameTime)
 	lastFrame = LastFrameTime;
 }
 
+void Game::UpdateViewMatrix()
+{
+	viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
+}
+
 void Game::SetCameraRotation(glm::vec3 newCameraRotation)
 {
 	cameraFront = newCameraRotation;
+	//Update the view matrix with the new camera rotation
+	UpdateViewMatrix();
 }
 
 void Game::TranslateViewMatrix(glm::vec3 translateVector)
 {
 	//take current view matrix and translate it by the given vector
 	viewMatrix = glm::translate(viewMatrix, translateVector);
+}
+
+void Game::InitialiseCamera()
+{
+	//Setup view matrix (camera pos) to starting position
+	// //Initially, camera should face the -ve z-axis
+	cameraYaw = -90.f;
+
+	//TranslateViewMatrix(startCameraPosition);
+	SetCameraPosition(startCameraPosition);
+
+	
+
+	//Setup lastX and lastY coords to be middle of the window
+	/*lastX = static_cast<float>(windowWidth / 2);
+	lastY = static_cast<float>(windowHeight / 2);*/
 }
 
 
@@ -142,7 +169,8 @@ void Game::AddToCameraRotation(glm::vec3 rotationToAdd)
 void Game::SetCameraPosition(glm::vec3 newCameraPosition)
 {
 	currentCameraPosition = newCameraPosition;
-	viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
+	//Update the view matrix with the new camera position
+	UpdateViewMatrix();
 }
 
 void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)
@@ -261,7 +289,7 @@ int main()
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
-	//Multiple cubes positions
+	//Multiple cubes positions in the world
 	glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),

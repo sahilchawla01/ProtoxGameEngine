@@ -62,10 +62,12 @@ private:
 	float lastX = 400.f;
 	//The last position of the mouse on the y axis
 	float lastY = 400.f;
+	float cameraPitch = 0.f;
+	float cameraYaw = 0.f;
 	bool bHasCameraMoved = false;
 
 	float cameraSpeed = 5.f;
-	float cameraSensitivity = 0.5f;
+	float cameraSensitivity = 0.1f;
 
 	// -- Global variables --
 	//Time elapsed between last and current frame
@@ -75,6 +77,9 @@ private:
 
 	//Camera functions
 	void TranslateViewMatrix(glm::vec3 translateVector);
+	void InitialiseCamera();
+	//Update the current view matrix to its new values
+	void UpdateViewMatrix();
 	void SetCameraRotation(glm::vec3 newCameraRotation);
 	//The camera rotation is represented in the order ZYX (Roll, Pitch , Yaw)
 	void AddToCameraRotation(glm::vec3 rotationToAdd);
