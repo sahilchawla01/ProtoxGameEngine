@@ -77,9 +77,26 @@ void Game::MouseCallback(GLFWwindow* window, double xpos, double ypos)
 	direction.z = sin(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
 	direction = glm::normalize(direction);
 
-	//Set camera's new rotation
-	gamePtr->SetCameraRotation(direction);
+	//Set camera's new unit direction
+	gamePtr->SetCameraUnitDirection(direction);
+	//Set camera rotation
+	gamePtr->SetCameraRotation(glm::vec3(gamePtr->cameraPitch, gamePtr->cameraYaw, 0.f));
 
+}
+
+void Game::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	//Get game pointer
+	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
+
+	//Positive implies zoom in, negative implies zoom out
+	float zoomDirectionScale = 1.f;
+	//If zooming out, invert zoom direction
+	if (yOffset < 0.0) zoomDirectionScale = -1.f;
+
+	float currCameraFov = gamePtr->GetCameraFov();
+	//Finally, set camera fov
+	gamePtr->SetCameraFov(currCameraFov - (gamePtr->cameraFovStep * zoomDirectionScale));
 }
 
 double Game::GetTimeElapsedSinceLaunch()
@@ -106,12 +123,12 @@ void Game::ProcessInput(GLFWwindow* window)
 		glm::vec3 newCamPos = currentCameraPosition - (cameraSpeed * deltaTime) * cameraFront;
 		SetCameraPosition(newCamPos);
 	}
-if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
 	}
-if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
 		SetCameraPosition(newCamPos);
@@ -125,6 +142,9 @@ void Game::InitialiseGame()
 
 	//Setup init camera pos, rot, etc.
 	InitialiseCamera();
+
+	UpdateProjectionMatrix();
+	UpdateViewMatrix();
 }
 
 glm::mat4 Game::GetViewMatrix()
@@ -145,14 +165,68 @@ void Game::SetLastFrameTime(float LastFrameTime)
 void Game::UpdateViewMatrix()
 {
 	//The new view matrix is based on the 3 coordinate system with the camera at the center, using the cameraUp direction, camera front direction and currentCamera position
-	viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
+	//viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
+	viewMatrix = CalculateLookAtMatrix(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
+}
+
+void Game::UpdateProjectionMatrix()
+{
+	std::cout << "\nUpdating Projection matrix.. FOV: " << GetCameraFov() << "\t Aspect Ratio: " << static_cast<float>(windowWidth / windowHeight);
+	//Updates the projection matrix according to new fov of camera
+	projectionMatrix = glm::perspective(glm::radians(GetCameraFov()), static_cast<float>(windowWidth / windowHeight), 0.1f, 100.f);
 }
 
 void Game::SetCameraRotation(glm::vec3 newCameraRotation)
 {
-	cameraFront = newCameraRotation;
+	//Set camera pitch
+	cameraPitch = newCameraRotation.x;
+	//Set camera yaw
+	cameraYaw = newCameraRotation.y;
+
+	//Set camera rotation
+	cameraRotation = newCameraRotation;
+}
+
+void Game::SetCameraUnitDirection(glm::vec3 newUnitDirection)
+{
+	cameraFront = newUnitDirection;
 	//Update the view matrix with the new camera rotation
 	UpdateViewMatrix();
+}
+
+glm::mat4 Game::CalculateLookAtMatrix(glm::vec3 cameraPosition, glm::vec3 targetPosition, glm::vec3 worldUp)
+{
+	//Calculate cameraDirection
+	glm::vec3 zAxis = glm::normalize(cameraPosition - targetPosition);
+	//Get positive right axis from worldUp
+	glm::vec3 xAxis = glm::normalize(glm::cross(glm::normalize(worldUp), zAxis));
+	//Calculate camera up vector
+	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
+
+	//Create translation and rotation matrix
+	//In glm, we access matrix by column-major layout
+	glm::mat4 translation = glm::mat4(1.f);
+	translation[3][0] = -cameraPosition.x; //Fourth column
+	translation[3][1] = -cameraPosition.y;
+	translation[3][2] = -cameraPosition.z;
+
+	//Create rotation matrix
+	glm::mat4 rotation = glm::mat4(1.f);
+	rotation[0][0] = xAxis.x; //First row is the right vector
+	rotation[1][0] = xAxis.y;
+	rotation[2][0] = xAxis.z;
+
+	rotation[0][1] = yAxis.x; //Second row is up vector
+	rotation[1][1] = yAxis.y;
+	rotation[2][1] = yAxis.z;
+
+	rotation[0][2] = zAxis.x; //Third row is the direction vector
+	rotation[1][2] = zAxis.y;
+	rotation[2][2] = zAxis.z;
+	
+	//Return lookAt matrix as a combination of the translation and rotation matrix
+
+	return rotation * translation;
 }
 
 void Game::TranslateViewMatrix(glm::vec3 translateVector)
@@ -174,7 +248,6 @@ void Game::InitialiseCamera()
 	/*lastX = static_cast<float>(windowWidth / 2);
 	lastY = static_cast<float>(windowHeight / 2);*/
 }
-
 
 void Game::AddToCameraRotation(glm::vec3 rotationToAdd)
 {
@@ -198,6 +271,21 @@ void Game::DisableFastCamera()
 {
 	//Decrease camera speed back to default
 	cameraSpeed /= fastCameraSpeedMultiplier;
+}
+
+void Game::SetCameraFov(float newFov)
+{
+	//Constrain fov to be between max and min camera fov
+	if (newFov > maxCameraFov) newFov = maxCameraFov;
+	else if (newFov < minCameraFov) newFov = minCameraFov;
+
+	//Set new camera fov
+	cameraFov = newFov;
+	
+	std::cout << "\nNew camera fov: " << newFov;
+
+	//With new fov, update projection matrix
+	UpdateProjectionMatrix();
 }
 
 void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)
@@ -255,6 +343,8 @@ int main()
 	glfwSetKeyCallback(window, Game::InputKeyCallback);
 	//Set mouse callback
 	glfwSetCursorPosCallback(window, Game::MouseCallback);
+	//Set scroll callback
+	glfwSetScrollCallback(window, Game::ScrollCallback);
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
@@ -491,9 +581,6 @@ int main()
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
 
-		glm::mat4 projectionMatrix = glm::mat4(1.f);
-		projectionMatrix = glm::perspective(glm::radians(45.f), static_cast<float>(game->windowWidth / game->windowHeight), 0.1f, 100.f);
-
 		//Draw first object
 		glBindVertexArray(VAO);
 
@@ -518,7 +605,7 @@ int main()
 
 			//Create MVP matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
-			mvpMatrix = projectionMatrix * game->GetViewMatrix() * model;
+			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * model;
 
 			unsigned int mvpUniLocation = glGetUniformLocation(mixTexShader.ID, "mvp");
 			//Provide MVP matrix to the vertex shader
