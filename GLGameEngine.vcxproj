@@ -141,11 +141,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Actors\AActor.h" />
+    <ClInclude Include="include\Actors\ACamera.h" />
     <ClInclude Include="include\GLGameEngine.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Actors\AActor.cpp" />
+    <ClCompile Include="src\Actors\ACamera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\GLGameEngine.cpp" />
     <ClCompile Include="src\helpers\Shader.cpp" />

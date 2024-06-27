@@ -8,6 +8,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+class ACamera;
+
 /*
 * GLFW is used to handle input, create a window, etc.
 * GLAD retrieves location of functions that implement OpenGL specifications and stores them. These functions are implemented as per driver-basis and is used to retrieve the function implementation at run-time.
@@ -61,10 +64,14 @@ private:
 	glm::mat4 projectionMatrix = glm::mat4(1.f);
 	glm::mat4 viewMatrix = glm::mat4(1.f);
 
+	//--All World's Actor variables -- 
+	ACamera* activeCamera = nullptr;
+
 	//-- MVP related functions --
 	//Update the current view matrix to its new values
 	void UpdateViewMatrix();
 	void UpdateProjectionMatrix();
+
 
 	//Camera variables and functions
 	glm::vec3 currentCameraPosition = glm::vec3(0.f);
@@ -114,6 +121,7 @@ private:
 
 	//Sets the fov of the camera, which updates the projection matrix
 	void SetCameraFov(float newFov);
+	void ProcessActiveCameraScrollInput(float xOffset, float yOffset);
 	//Get the camera's fov in float 
 	float GetCameraFov() { return cameraFov; };
 

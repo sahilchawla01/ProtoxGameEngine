@@ -2,6 +2,7 @@
 #include <Shader.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <Actors/ACamera.h>
 
 
 Game::Game(GLFWwindow** wndPtr)
@@ -44,43 +45,46 @@ void Game::MouseCallback(GLFWwindow* window, double xpos, double ypos)
 	//Get game pointer
 	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
 
-	//If mouse hasn't moved since start of the window
-	if (!gamePtr->bHasCameraMoved)
-	{
-		gamePtr->lastX = xpos;
-		gamePtr->lastY = ypos;
-		gamePtr->bHasCameraMoved = true;
-	}
-	//Calculate offset since previous
-	float xOffset = xpos - gamePtr->lastX;
-	float yOffset = gamePtr->lastY - ypos;
-	//Store last x and y values
-	gamePtr->lastX = xpos;
-	gamePtr->lastY = ypos;
+	//If active camera exists, send the mouse input
+	if (gamePtr->activeCamera) gamePtr->activeCamera->ProcessMouseInput(xpos, ypos);
 
-	//Factor in camera sensitivity
-	xOffset *= gamePtr->cameraSensitivity;
-	yOffset *= gamePtr->cameraSensitivity;
+	////If mouse hasn't moved since start of the window
+	//if (!gamePtr->bHasCameraMoved)
+	//{
+	//	gamePtr->lastX = xpos;
+	//	gamePtr->lastY = ypos;
+	//	gamePtr->bHasCameraMoved = true;
+	//}
+	////Calculate offset since previous
+	//float xOffset = xpos - gamePtr->lastX;
+	//float yOffset = gamePtr->lastY - ypos;
+	////Store last x and y values
+	//gamePtr->lastX = xpos;
+	//gamePtr->lastY = ypos;
 
-	//Add offset values to camera's rotation
-	gamePtr->cameraPitch += yOffset;
-	gamePtr->cameraYaw += xOffset;
+	////Factor in camera sensitivity
+	//xOffset *= gamePtr->cameraSensitivity;
+	//yOffset *= gamePtr->cameraSensitivity;
 
-	//Constraint looking up and down beyond 89 degrees
-	if (gamePtr->cameraPitch > 89.f) gamePtr->cameraPitch = 89.f;
-	else if (gamePtr->cameraPitch < -89.f) gamePtr->cameraPitch = -89.f;
+	////Add offset values to camera's rotation
+	//gamePtr->cameraPitch += yOffset;
+	//gamePtr->cameraYaw += xOffset;
 
-	//Calculate direction vector that gamePtr->camera now looks at 
-	glm::vec3 direction(0.f, 0.f, 0.f);
-	direction.x = cos(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
-	direction.y = sin(glm::radians(gamePtr->cameraPitch));
-	direction.z = sin(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
-	direction = glm::normalize(direction);
+	////Constraint looking up and down beyond 89 degrees
+	//if (gamePtr->cameraPitch > 89.f) gamePtr->cameraPitch = 89.f;
+	//else if (gamePtr->cameraPitch < -89.f) gamePtr->cameraPitch = -89.f;
 
-	//Set camera's new unit direction
-	gamePtr->SetCameraUnitDirection(direction);
-	//Set camera rotation
-	gamePtr->SetCameraRotation(glm::vec3(gamePtr->cameraPitch, gamePtr->cameraYaw, 0.f));
+	////Calculate direction vector that gamePtr->camera now looks at 
+	//glm::vec3 direction(0.f, 0.f, 0.f);
+	//direction.x = cos(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
+	//direction.y = sin(glm::radians(gamePtr->cameraPitch));
+	//direction.z = sin(glm::radians(gamePtr->cameraYaw)) * cos(glm::radians(gamePtr->cameraPitch));
+	//direction = glm::normalize(direction);
+
+	////Set camera's new unit direction
+	//gamePtr->SetCameraUnitDirection(direction);
+	////Set camera rotation
+	//gamePtr->SetCameraRotation(glm::vec3(gamePtr->cameraPitch, gamePtr->cameraYaw, 0.f));
 
 }
 
@@ -89,14 +93,17 @@ void Game::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 	//Get game pointer
 	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
 
-	//Positive implies zoom in, negative implies zoom out
-	float zoomDirectionScale = 1.f;
-	//If zooming out, invert zoom direction
-	if (yOffset < 0.0) zoomDirectionScale = -1.f;
+	////Positive implies zoom in, negative implies zoom out
+	//float zoomDirectionScale = 1.f;
+	////If zooming out, invert zoom direction
+	//if (yOffset < 0.0) zoomDirectionScale = -1.f;
 
-	float currCameraFov = gamePtr->GetCameraFov();
-	//Finally, set camera fov
-	gamePtr->SetCameraFov(currCameraFov - (gamePtr->cameraFovStep * zoomDirectionScale));
+	//float currCameraFov = gamePtr->GetCameraFov();
+	////Finally, set camera fov
+	//gamePtr->SetCameraFov(currCameraFov - (gamePtr->cameraFovStep * zoomDirectionScale));
+
+	//Set the currently active camera's FOV
+	gamePtr->ProcessActiveCameraScrollInput(xOffset, yOffset);
 }
 
 double Game::GetTimeElapsedSinceLaunch()
@@ -113,25 +120,33 @@ void Game::ProcessInput(GLFWwindow* window)
 {
 
 	//-- Handle WASD movement for camera  --
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (activeCamera) 
 	{
-		glm::vec3 newCamPos = currentCameraPosition + (cameraSpeed * deltaTime) * cameraFront;
-		SetCameraPosition(newCamPos);
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		glm::vec3 newCamPos = currentCameraPosition - (cameraSpeed * deltaTime) * cameraFront;
-		SetCameraPosition(newCamPos);
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
-		SetCameraPosition(newCamPos);
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
-		SetCameraPosition(newCamPos);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			activeCamera->ProcessKeyboardInput(ECameraMoveDirection::FORWARD, deltaTime);
+			/*glm::vec3 newCamPos = currentCameraPosition + (cameraSpeed * deltaTime) * cameraFront;
+			SetCameraPosition(newCamPos);*/
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			activeCamera->ProcessKeyboardInput(ECameraMoveDirection::BACKWARD, deltaTime);
+			/*glm::vec3 newCamPos = currentCameraPosition - (cameraSpeed * deltaTime) * cameraFront;
+			SetCameraPosition(newCamPos);*/
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			activeCamera->ProcessKeyboardInput(ECameraMoveDirection::LEFT, deltaTime);
+			/*glm::vec3 newCamPos = currentCameraPosition - glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
+			SetCameraPosition(newCamPos);*/
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			activeCamera->ProcessKeyboardInput(ECameraMoveDirection::RIGHT, deltaTime);
+			/*glm::vec3 newCamPos = currentCameraPosition + glm::normalize(glm::cross(cameraFront, cameraUp)) * (cameraSpeed * deltaTime);
+			SetCameraPosition(newCamPos);*/
+		}
+
 	}
 }
 
@@ -285,6 +300,21 @@ void Game::SetCameraFov(float newFov)
 	std::cout << "\nNew camera fov: " << newFov;
 
 	//With new fov, update projection matrix
+	UpdateProjectionMatrix();
+}
+
+void Game::ProcessActiveCameraScrollInput(float xOffset, float yOffset)
+{
+	if (!activeCamera)
+	{
+		std::cout << "\nError: Active camera didn't exist when setting fov";
+		return;
+	}
+
+	//Tell active camera to process scroll input, possibly changing the fov
+	activeCamera->ProcessScrollInput(xOffset, yOffset);
+
+	//Update the projection matrix if the fov of the active camera has changed
 	UpdateProjectionMatrix();
 }
 
