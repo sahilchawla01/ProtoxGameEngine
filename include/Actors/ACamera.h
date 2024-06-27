@@ -17,7 +17,7 @@ class ACamera : public AActor
 public:
 
 	//Constructor sets start position, rotation and updates view matrix
-	ACamera(glm::vec3 spawnPosition, glm::vec3 worldUp, float yaw, float pitch);
+	ACamera(glm::vec3 spawnPosition, glm::vec3 worldUp, float yaw, float pitch, float aspectRatio);
 
 	//-- Camera Variables -- 
 	//The camera position in world space
@@ -45,6 +45,7 @@ public:
 	float cameraFovStep = 10.f;
 	float minCameraFov = 20.f;
 	float maxCameraFov = 120.f;
+	float cameraAspectRatio = 0.5f;
 
 	//-- Camera user-settable settings -- 
 	float cameraSpeed = 5.f;
@@ -61,6 +62,8 @@ public:
 private:
 	//The view matrix associated with the camera
 	glm::mat4 viewMatrix = glm::mat4(1.f);
+	//The projection matrix associated with the camera
+	glm::mat4 projectionMatrix = glm::mat4(1.f);
 
 public:
 
@@ -68,6 +71,8 @@ public:
 	void UpdateViewMatrix();
 	//Updates all the direction vectors for the camera (Front, Right, Up) according to the current camera rotation
 	void UpdateCameraDirectionVectors();
+	//Updates the projection matrix according to the camera FOV
+	void UpdateProjectionMatrix();
 
 	//--	Translate and Rotate operations		--
 	//(Updates view matrix automatically) Sets camera position according to a provided world position
@@ -97,7 +102,9 @@ public:
 	//Get the camera's fov in float 
 	float GetCameraFov() { return cameraFov; };
 
+	//Get matrices
 	glm::mat4 GetViewMatrix();
+	glm::mat4 GetProjectionMatrix();
 
 private:
 	//Calculates look at matrix according to given arguements

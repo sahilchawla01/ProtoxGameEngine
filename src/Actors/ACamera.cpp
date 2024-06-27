@@ -1,13 +1,14 @@
 #include <Actors/ACamera.h>
 #include <iostream>
 
-ACamera::ACamera(glm::vec3 spawnPosition = glm::vec3(0.f, 0.f, 0.f), glm::vec3 worldUp = glm::vec3(0.f, 1.f, 0.f), float yaw = 0.f, float pitch = -90.f)
+ACamera::ACamera(glm::vec3 spawnPosition = glm::vec3(0.f, 0.f, 0.f), glm::vec3 worldUp = glm::vec3(0.f, 1.f, 0.f), float yaw = -90.f, float pitch = 0.f, float aspectRatio = 0.5f)
 {
 	this->currentCameraPosition = spawnPosition;
 	this->startCameraPosition = spawnPosition;
 	this->worldUp = worldUp;
 	this->cameraYaw = yaw;
 	this->cameraPitch = pitch;
+	this->cameraAspectRatio = aspectRatio;
 
 	//Set camera position
 	SetCameraPosition(startCameraPosition);
@@ -17,6 +18,8 @@ ACamera::ACamera(glm::vec3 spawnPosition = glm::vec3(0.f, 0.f, 0.f), glm::vec3 w
 
 	//Update view matrix according to new camera position
 	UpdateViewMatrix();
+	//Update projection matrix according to camera fov
+	UpdateProjectionMatrix();
 }
 
 void ACamera::UpdateViewMatrix()
@@ -48,6 +51,13 @@ void ACamera::UpdateCameraDirectionVectors()
 
 	//Update view matrix according to new direction
 	UpdateViewMatrix();
+}
+
+void ACamera::UpdateProjectionMatrix()
+{
+	std::cout << "\nUpdating Projection matrix.. FOV: " << GetCameraFov() << "\t Aspect Ratio: " << cameraAspectRatio;
+	//Updates the projection matrix according to new fov of camera
+	projectionMatrix = glm::perspective(glm::radians(GetCameraFov()), cameraAspectRatio, 0.1f, 100.f);
 }
 
 glm::mat4 ACamera::CalculateLookAtMatrix(glm::vec3 cameraPosition, glm::vec3 targetPosition, glm::vec3 worldUp)
@@ -85,7 +95,7 @@ glm::mat4 ACamera::CalculateLookAtMatrix(glm::vec3 cameraPosition, glm::vec3 tar
 	return rotation * translation;
 }
 
-void ACamera::SetCameraPosition(glm::vec3 newCameraPosition, bool bAutoUpdateViewMatrix = true)
+void ACamera::SetCameraPosition(glm::vec3 newCameraPosition, bool bAutoUpdateViewMatrix)
 {
 	currentCameraPosition = newCameraPosition;
 
@@ -93,7 +103,7 @@ void ACamera::SetCameraPosition(glm::vec3 newCameraPosition, bool bAutoUpdateVie
 	if(bAutoUpdateViewMatrix) UpdateViewMatrix();
 }
 
-void ACamera::AddCameraPosition(glm::vec3 positionToAdd, bool bAutoUpdateViewMatrix = true)
+void ACamera::AddCameraPosition(glm::vec3 positionToAdd, bool bAutoUpdateViewMatrix)
 {
 	currentCameraPosition += positionToAdd;
 
@@ -101,7 +111,7 @@ void ACamera::AddCameraPosition(glm::vec3 positionToAdd, bool bAutoUpdateViewMat
 	if (bAutoUpdateViewMatrix) UpdateViewMatrix();
 }
 
-void ACamera::SetCameraRotation(glm::vec3 newCameraRotation, bool bAutoUpdateViewMatrix = true)
+void ACamera::SetCameraRotation(glm::vec3 newCameraRotation, bool bAutoUpdateViewMatrix)
 {
 	cameraPitch = newCameraRotation.x;
 	cameraYaw = newCameraRotation.y;
@@ -115,7 +125,7 @@ void ACamera::SetCameraRotation(glm::vec3 newCameraRotation, bool bAutoUpdateVie
 	if (bAutoUpdateViewMatrix) UpdateViewMatrix();
 }
 
-void ACamera::AddToCameraRotation(glm::vec3 rotationToAdd, bool bAutoUpdateViewMatrix = true)
+void ACamera::AddToCameraRotation(glm::vec3 rotationToAdd, bool bAutoUpdateViewMatrix)
 {
 	cameraPitch += rotationToAdd.x;
 	cameraYaw += rotationToAdd.y;
@@ -219,6 +229,17 @@ void ACamera::ProcessScrollInput(float xOffset, float yOffset)
 
 void ACamera::SetCameraFov(float newFov)
 {
+	//Constrain fov to be between max and min camera fov
+	if (newFov > maxCameraFov) newFov = maxCameraFov;
+	else if (newFov < minCameraFov) newFov = minCameraFov;
+
+	//Set new camera fov
+	cameraFov = newFov;
+
+	std::cout << "\nNew camera fov: " << newFov;
+
+	//With new fov, update projection matrix
+	UpdateProjectionMatrix();
 }
 
 glm::mat4 ACamera::GetViewMatrix()
@@ -227,4 +248,12 @@ glm::mat4 ACamera::GetViewMatrix()
 	UpdateViewMatrix();
 
 	return viewMatrix;
+}
+
+glm::mat4 ACamera::GetProjectionMatrix()
+{
+	//Update the projection matrix if any changes required and return it
+	UpdateProjectionMatrix();
+
+	return projectionMatrix;
 }

@@ -25,13 +25,13 @@ void Game::InputKeyCallback(GLFWwindow* window, int key, int scancode, int actio
 	//--  Handle fast camera -- 
 	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
 	{
+		if(gamePtr->activeCamera) gamePtr->activeCamera->EnableFastCamera();
 		std::cout << "\nEnable fast camera";
-		gamePtr->EnableFastCamera();
 	}
 	else if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
 	{
+		if (gamePtr->activeCamera) gamePtr->activeCamera->DisableFastCamera();
 		std::cout << "\nDisable fast camera";
-		gamePtr->DisableFastCamera();
 	}
 }
 
@@ -46,7 +46,7 @@ void Game::MouseCallback(GLFWwindow* window, double xpos, double ypos)
 	Game* gamePtr = (Game*)glfwGetWindowUserPointer(window);
 
 	//If active camera exists, send the mouse input
-	if (gamePtr->activeCamera) gamePtr->activeCamera->ProcessMouseInput(xpos, ypos);
+	if (gamePtr->activeCamera) gamePtr->activeCamera->ProcessMouseInput(static_cast<float>(xpos), static_cast<float>(ypos));
 
 	////If mouse hasn't moved since start of the window
 	//if (!gamePtr->bHasCameraMoved)
@@ -103,7 +103,7 @@ void Game::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 	//gamePtr->SetCameraFov(currCameraFov - (gamePtr->cameraFovStep * zoomDirectionScale));
 
 	//Set the currently active camera's FOV
-	gamePtr->ProcessActiveCameraScrollInput(xOffset, yOffset);
+	if(gamePtr->activeCamera) gamePtr->activeCamera->ProcessScrollInput(static_cast<float>(xOffset), static_cast<float>(yOffset));
 }
 
 double Game::GetTimeElapsedSinceLaunch()
@@ -155,17 +155,12 @@ void Game::InitialiseGame()
 	//Store window size 
 	glfwGetWindowSize(*windowPointer, &windowWidth, &windowHeight);
 
-	//Setup init camera pos, rot, etc.
-	InitialiseCamera();
+	float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 
-	UpdateProjectionMatrix();
-	UpdateViewMatrix();
+	//Create a "editor" camera
+	activeCamera = std::make_unique<ACamera>(glm::vec3(0.0f, 0.0f, 10.f), glm::vec3(0.f, 1.f, 0.f), -90.f, 0.f, aspectRatio);
 }
 
-glm::mat4 Game::GetViewMatrix()
-{
-	return viewMatrix;
-}
 
 void Game::SetDeltaTime(float DeltaTime)
 {
@@ -177,151 +172,28 @@ void Game::SetLastFrameTime(float LastFrameTime)
 	lastFrame = LastFrameTime;
 }
 
-void Game::UpdateViewMatrix()
-{
-	//The new view matrix is based on the 3 coordinate system with the camera at the center, using the cameraUp direction, camera front direction and currentCamera position
-	//viewMatrix = glm::lookAt(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
-	viewMatrix = CalculateLookAtMatrix(currentCameraPosition, currentCameraPosition + cameraFront, cameraUp);
-}
-
-void Game::UpdateProjectionMatrix()
-{
-	std::cout << "\nUpdating Projection matrix.. FOV: " << GetCameraFov() << "\t Aspect Ratio: " << static_cast<float>(windowWidth / windowHeight);
-	//Updates the projection matrix according to new fov of camera
-	projectionMatrix = glm::perspective(glm::radians(GetCameraFov()), static_cast<float>(windowWidth / windowHeight), 0.1f, 100.f);
-}
-
-void Game::SetCameraRotation(glm::vec3 newCameraRotation)
-{
-	//Set camera pitch
-	cameraPitch = newCameraRotation.x;
-	//Set camera yaw
-	cameraYaw = newCameraRotation.y;
-
-	//Set camera rotation
-	cameraRotation = newCameraRotation;
-}
-
-void Game::SetCameraUnitDirection(glm::vec3 newUnitDirection)
-{
-	cameraFront = newUnitDirection;
-	//Update the view matrix with the new camera rotation
-	UpdateViewMatrix();
-}
-
-glm::mat4 Game::CalculateLookAtMatrix(glm::vec3 cameraPosition, glm::vec3 targetPosition, glm::vec3 worldUp)
-{
-	//Calculate cameraDirection
-	glm::vec3 zAxis = glm::normalize(cameraPosition - targetPosition);
-	//Get positive right axis from worldUp
-	glm::vec3 xAxis = glm::normalize(glm::cross(glm::normalize(worldUp), zAxis));
-	//Calculate camera up vector
-	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
-
-	//Create translation and rotation matrix
-	//In glm, we access matrix by column-major layout
-	glm::mat4 translation = glm::mat4(1.f);
-	translation[3][0] = -cameraPosition.x; //Fourth column
-	translation[3][1] = -cameraPosition.y;
-	translation[3][2] = -cameraPosition.z;
-
-	//Create rotation matrix
-	glm::mat4 rotation = glm::mat4(1.f);
-	rotation[0][0] = xAxis.x; //First row is the right vector
-	rotation[1][0] = xAxis.y;
-	rotation[2][0] = xAxis.z;
-
-	rotation[0][1] = yAxis.x; //Second row is up vector
-	rotation[1][1] = yAxis.y;
-	rotation[2][1] = yAxis.z;
-
-	rotation[0][2] = zAxis.x; //Third row is the direction vector
-	rotation[1][2] = zAxis.y;
-	rotation[2][2] = zAxis.z;
-	
-	//Return lookAt matrix as a combination of the translation and rotation matrix
-
-	return rotation * translation;
-}
-
-void Game::TranslateViewMatrix(glm::vec3 translateVector)
-{
-	//take current view matrix and translate it by the given vector
-	viewMatrix = glm::translate(viewMatrix, translateVector);
-}
-
-void Game::InitialiseCamera()
-{
-	//Setup view matrix (camera pos) to starting position
-	// //Initially, camera should face the -ve z-axis
-	cameraYaw = -90.f;
-
-	//TranslateViewMatrix(startCameraPosition);
-	SetCameraPosition(startCameraPosition);
-
-	//Setup lastX and lastY coords to be middle of the window
-	/*lastX = static_cast<float>(windowWidth / 2);
-	lastY = static_cast<float>(windowHeight / 2);*/
-}
-
-void Game::AddToCameraRotation(glm::vec3 rotationToAdd)
-{
-	cameraRotation += rotationToAdd;
-}
-
-void Game::SetCameraPosition(glm::vec3 newCameraPosition)
-{
-	currentCameraPosition = newCameraPosition;
-	//Update the view matrix with the new camera position
-	UpdateViewMatrix();
-}
-
-void Game::EnableFastCamera()
-{
-	//Increase camera speed 
-	cameraSpeed *= fastCameraSpeedMultiplier;
-}
-
-void Game::DisableFastCamera()
-{
-	//Decrease camera speed back to default
-	cameraSpeed /= fastCameraSpeedMultiplier;
-}
-
-void Game::SetCameraFov(float newFov)
-{
-	//Constrain fov to be between max and min camera fov
-	if (newFov > maxCameraFov) newFov = maxCameraFov;
-	else if (newFov < minCameraFov) newFov = minCameraFov;
-
-	//Set new camera fov
-	cameraFov = newFov;
-	
-	std::cout << "\nNew camera fov: " << newFov;
-
-	//With new fov, update projection matrix
-	UpdateProjectionMatrix();
-}
-
-void Game::ProcessActiveCameraScrollInput(float xOffset, float yOffset)
+glm::mat4 Game::GetProjectionMatrix()
 {
 	if (!activeCamera)
 	{
-		std::cout << "\nError: Active camera didn't exist when setting fov";
-		return;
+		std::cout << "\nError! Active camera was null when getting projection matrix";
+		return glm::mat4(1.f);
 	}
 
-	//Tell active camera to process scroll input, possibly changing the fov
-	activeCamera->ProcessScrollInput(xOffset, yOffset);
-
-	//Update the projection matrix if the fov of the active camera has changed
-	UpdateProjectionMatrix();
+	return activeCamera->GetProjectionMatrix();
 }
 
-void Game::SetViewMatrix(glm::highp_mat4 newViewMatrix)
+glm::mat4 Game::GetViewMatrix()
 {
-	viewMatrix = newViewMatrix;
+	if (!activeCamera)
+	{
+		std::cout << "\nError! Active camera was null when getting view matrix";
+		return glm::mat4(1.f);
+	}
+
+	return activeCamera->GetViewMatrix();
 }
+
 
 void ErrorCallback(int error, const char* description)
 {
@@ -572,7 +444,8 @@ int main()
 		//Process input
 		//Update
 		//Render
-	while (!glfwWindowShouldClose(window)) //Game loop
+	// -- GAME LOOP -- 
+	while (!glfwWindowShouldClose(window)) 
 	{
 
 		//Input
@@ -581,7 +454,7 @@ int main()
 		
 		// -- Update --
 		//Set elapsed time and delta time
-		float currentTime = glfwGetTime();
+		float currentTime = static_cast<float>(glfwGetTime());
 		game->SetTimeElapsedSinceLaunch(static_cast<int>(currentTime));
 		game->SetDeltaTime(currentTime - game->GetLastFrameTime());
 		game->SetLastFrameTime(currentTime);
@@ -625,7 +498,7 @@ int main()
 
 			if (i == 0) angle = 20.f;
 
-			model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
+			if (i != 0) model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
 
 			//Change view matrix
 			/*const float radius = 10.0f;
