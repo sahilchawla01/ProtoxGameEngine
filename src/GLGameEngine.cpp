@@ -309,7 +309,7 @@ int main()
 	};
 
 	// -- CREATE LIGHT OBJECT --
-	glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
+	glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, -2.0f);
 	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
 
 	//Create a VAO
@@ -343,7 +343,7 @@ int main()
 	unlitShader.use();
 
 	//Multiple cubes positions in the world
-	glm::vec3 cubePositions[] = {
+	/*glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),
 	glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -354,7 +354,7 @@ int main()
 	glm::vec3(1.5f,  2.0f, -2.5f),
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
+	};*/
 
 	unsigned int indices[] =
 	{
@@ -497,7 +497,7 @@ int main()
 
 		//Render:
 		//Set background color
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f);
 		//clear color and depth buffer so last frame's buffers aren't carried over
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

@@ -7,5 +7,11 @@ out vec4 FragColor;
 
 void main()
 {
-	FragColor = vec4(objectColor * lightColor, 1.0);
+	float ambientStrength = 0.1f;
+
+	vec3 ambient = ambientStrength * lightColor;
+
+	vec3 phongResult = ambient * objectColor;
+
+	FragColor = vec4(phongResult, 1.0);
 }
