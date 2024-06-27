@@ -251,10 +251,10 @@ int main()
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
 	//Create and setup mixng texture shader
-	Shader mixTexShader("src/shaders/mix-texture-mvp.vert", "src/shaders/mix-texture.frag");
+	Shader litShader("src/shaders/simple-lit.vert", "src/shaders/simple-lit.frag");
 
 	//Create a rectangle object and setup vertex input
-	//float vertices[] = {
+	//float cubeObjectVertices[] = {
 	//	//positions								//colors		//texture coordinate
 	//	-0.5f, -0.5f, 0.f, /* Bottom left */ 1.f, 0.f, 0.f,		0.f, 0.f,
 	//	0.5f, -0.5f, 0.f, /* Bottom Right*/ 0.f, 1.f, 0.f,		1.f, 0.f,
@@ -262,9 +262,9 @@ int main()
 	//	0.5f, 0.5f, 0.f, /* Top Right*/ 1.f, 1.f, 0.f,			1.f, 1.f,
 
 	//};
-
+	// 
 	//3 dimensional cube
-	float vertices[] = {
+	float cubeObjectVertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -308,6 +308,40 @@ int main()
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
+	// -- CREATE LIGHT OBJECT --
+	glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
+	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
+
+	//Create a VAO
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+
+	//Create a VBO
+	unsigned int lightVBO;
+	glGenBuffers(1, &lightVBO);
+
+	//Bind the VAO first
+	glBindVertexArray(lightVAO);
+
+	//Bind the VBO with a cube's vertices
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeObjectVertices), cubeObjectVertices, GL_STATIC_DRAW);
+
+	//Instruct the VBO how to interpret the data
+	//vertex coord attrb
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//Unbind VBO, then unbind VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	//Create and setup unlit shader for lightobject
+	Shader unlitShader("src/shaders/unlit.vert", "src/shaders/unlit.frag");
+
+	//activate the shader program
+	unlitShader.use();
+
 	//Multiple cubes positions in the world
 	glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
@@ -338,7 +372,7 @@ int main()
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
-	//Create and bind a EBO(Element Buffer Object) to store indices to decide which vertices to draw
+	//Create and bind a EBO(Element Buffer Object) to store indices to decide which cubeObjectVertices to draw
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 
@@ -347,7 +381,7 @@ int main()
 
 	//Bind the VBO, next
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeObjectVertices), cubeObjectVertices, GL_STATIC_DRAW);
 
 	//Bind the EBO next
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -359,7 +393,6 @@ int main()
 	// texture coord attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 
 	//Unbind VBO, then unbind VAO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -432,10 +465,10 @@ int main()
 	stbi_image_free(smileTexData);
 
 	//activate the shader program
-	mixTexShader.use();
+	litShader.use();
 	//Set texture unit values
-	mixTexShader.setInt("texture1", 0);
-	mixTexShader.setInt("texture2", 1);
+	/*litShader.setInt("texture1", 0);
+	litShader.setInt("texture2", 1);*/
 	
 
 	
@@ -468,8 +501,28 @@ int main()
 		//clear color and depth buffer so last frame's buffers aren't carried over
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//Draw a rectangle
-		// 
+		// -- Draw light object --
+		{
+			unlitShader.use();
+
+			glBindVertexArray(lightVAO);
+		
+			glm::mat4 lightModelMatrix = glm::mat4(1.f);
+			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
+			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
+
+			//Get mvp matrix 
+			glm::mat4 mvpMatrix = glm::mat4(1.f);
+			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * lightModelMatrix;
+
+			//Provide MVP matrix to the vertex shader
+			unlitShader.setMat4("mvp", mvpMatrix);
+
+			//Draw the light object
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		}
+		// -- Start drawing all the cubes --
 
 		//Bind textures to corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
@@ -478,46 +531,75 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, smileTexId);
 
 		//Activate shader
-		mixTexShader.use();
+		litShader.use();
 
-
-		glm::mat4 model = glm::mat4(1.f);
-		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
-
-		//Draw first object
-		glBindVertexArray(VAO);
-
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		for (int i = 0; i < 10; i++)
+		// -- DRAW 1 CUBE --
 		{
-			//Change object position through model matrix
-			model = glm::mat4(1.f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 10.f * i;
+			glBindVertexArray(VAO);
 
-			if (i == 0) angle = 20.f;
+			glm::mat4 cubeModelMatrix = glm::mat4(1.f);
 
-			if (i != 0) model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
-
-			//Change view matrix
-			/*const float radius = 10.0f;
-			float camX = sin(glfwGetTime()) * radius;
-			float camZ = cos(glfwGetTime()) * radius;
-			game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));*/
-
-			//Create MVP matrix 
+			//Get mvp matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
-			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * model;
+			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * cubeModelMatrix;
 
-			unsigned int mvpUniLocation = glGetUniformLocation(mixTexShader.ID, "mvp");
 			//Provide MVP matrix to the vertex shader
-			glUniformMatrix4fv(mvpUniLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
-			
-			//Draw the triangle
+			litShader.setMat4("mvp", mvpMatrix);
+			//Provide object color and light color
+			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 0.4f));
+			litShader.setVec3("lightColor", lightColor);
+
+			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		}
 
+		// -- DRAW 10 CUBES (COMMENTED) --
+		/*{
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
+
+			//Draw textured cube
+			glBindVertexArray(VAO);
+
+			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+			for (int i = 0; i < 10; i++)
+			{
+				//Change object position through model matrix
+				model = glm::mat4(1.f);
+				model = glm::translate(model, cubePositions[i]);
+				float angle = 10.f * i;
+
+				if (i == 0) angle = 20.f;
+
+				if (i != 0) model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
+
+				//Change view matrix
+				//const float radius = 10.0f;
+				//float camX = sin(glfwGetTime()) * radius;
+				//float camZ = cos(glfwGetTime()) * radius;
+				//game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));
+
+				//Create MVP matrix 
+				glm::mat4 mvpMatrix = glm::mat4(1.f);
+				mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * model;
+
+				unsigned int mvpUniLocation = glGetUniformLocation(litShader.ID, "mvp");
+				//Provide MVP matrix to the vertex shader
+				glUniformMatrix4fv(mvpUniLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+
+				//Sendobject and light color to frag shader
+				litShader.setVec3("objectColor", glm::vec3(0.5f, 0.5f, 1.f));
+				litShader.setVec3("lightColor", lightColor);
+
+
+				//Draw the triangle
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+			
+		}
+	*/
 	
 		//
 		//

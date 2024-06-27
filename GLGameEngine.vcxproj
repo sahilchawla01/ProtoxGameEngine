@@ -157,6 +157,12 @@
   <ItemGroup>
     <None Include="src\shaders\color-wheel.frag" />
     <None Include="src\shaders\color-wheel.vert" />
+    <None Include="src\shaders\lit-texture.frag" />
+    <None Include="src\shaders\lit-texture.vert" />
+    <None Include="src\shaders\simple-lit.frag" />
+    <None Include="src\shaders\simple-lit.vert" />
+    <None Include="src\shaders\unlit.frag" />
+    <None Include="src\shaders\unlit.vert" />
     <None Include="src\shaders\mix-texture-mvp.vert" />
     <None Include="src\shaders\mix-texture-transform.vert" />
     <None Include="src\shaders\mix-texture.frag" />
