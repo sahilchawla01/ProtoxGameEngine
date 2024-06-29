@@ -43,6 +43,9 @@ public:
 	//Simply gets view matrix of active camera
 	glm::mat4 GetViewMatrix();
 
+	//Gives a pointer to the currently active camera
+	ACamera* GetActiveCamera();
+
 
 public: 
 	bool bShouldGameRun = true;

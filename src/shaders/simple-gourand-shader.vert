@@ -1,18 +1,28 @@
 #version 330 core
 
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec3 aNormal;
+
+uniform mat4 mvp;
+uniform mat4 modelMatrix;
 uniform vec3 objectColor;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewWorldPos;
 
-in vec3 normal;
-in vec3 FragWorldPosition;
-
-out vec4 FragColor;
+out vec3 phongResult;
 
 void main()
 {
-
+	//Transform position by Model-View-Projection matrix
+	gl_Position = mvp * vec4(aPos, 1.0);
+	
+	//Store normal
+	vec3 normal = mat3(transpose(inverse(modelMatrix))) * aNormal;
+	
+	//Send over model position (world pos)
+	vec3 FragWorldPosition = vec3(modelMatrix * vec4(aPos, 1.0));
+	
 	//Calculate AMBIENT component of Phong
 	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * lightColor;
@@ -36,7 +46,7 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 	
 	//Get lighting resultant and multiply with object colour
-	vec3 phongResult = (ambient + diffuse + specular) * objectColor;
+	phongResult = (ambient + diffuse + specular) * objectColor;
 
-	FragColor = vec4(phongResult, 1.0);
 }
+

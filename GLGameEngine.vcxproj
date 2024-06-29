@@ -155,6 +155,8 @@
     <ClCompile Include="src\helpers\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shaders\simple-gourand-shader.frag" />
+    <None Include="src\shaders\simple-gourand-shader.vert" />
     <None Include="src\shaders\color-wheel.frag" />
     <None Include="src\shaders\color-wheel.vert" />
     <None Include="src\shaders\lit-texture.frag" />

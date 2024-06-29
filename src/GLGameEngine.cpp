@@ -194,6 +194,11 @@ glm::mat4 Game::GetViewMatrix()
 	return activeCamera->GetViewMatrix();
 }
 
+ACamera* Game::GetActiveCamera()
+{
+	return activeCamera.get();
+}
+
 
 void ErrorCallback(int error, const char* description)
 {
@@ -357,7 +362,7 @@ int main()
 	};
 
 	// -- CREATE LIGHT OBJECT --
-	glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
+	glm::vec3 lightPosition = glm::vec3(0.f, 1.0f, 4.f);
 	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
 
 	//Create a VAO
@@ -596,13 +601,20 @@ int main()
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
 			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * cubeModelMatrix;
 
+			//Get current camera
+			ACamera* currCamera = game->GetActiveCamera();
+			glm::vec3 currentCamPosition = (currCamera) ? currCamera->currentCameraPosition : glm::vec3(0.f, 0.f, 0.f);
+
 			//Provide MVP matrix to the vertex shader
-			litShader.setMat4("mvp", mvpMatrix);
+			litShader.setMat4("mvp", mvpMatrix);	
 			//Provide model matrix to vertex shader
 			litShader.setMat4("modelMatrix", cubeModelMatrix);
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
 			litShader.setVec3("lightColor", lightColor);
+			//Store positions
+			litShader.setVec3("viewWorldPos", currentCamPosition);
+			litShader.setVec3("lightPos", lightPosition);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);

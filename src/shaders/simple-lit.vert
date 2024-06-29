@@ -15,7 +15,7 @@ void main()
 	gl_Position = mvp * vec4(aPos, 1.0);
 	
 	//Store normal
-	normal = aNormal;
+	normal = mat3(transpose(inverse(modelMatrix))) * aNormal;
 	
 	//Send over model position (world pos)
 	FragWorldPosition = vec3(modelMatrix * vec4(aPos, 1.0));
