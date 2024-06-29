@@ -566,7 +566,11 @@ int main()
 			glBindVertexArray(lightVAO);
 		
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
-			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
+
+			lightPosition = glm::vec3(sin(glfwGetTime() * 2.f) * 2.f, 0.f, -cos(glfwGetTime() * 2.f) * 2.f);
+			
+			//Translate cube in a circular path on the XZ plane around origin
+			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition + glm::vec3(0.f, 0.f, 0.f));
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
 
 			//Get mvp matrix 
