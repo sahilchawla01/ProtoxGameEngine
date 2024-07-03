@@ -614,13 +614,17 @@ int main()
 			//Provide MVP matrix to the vertex shader
 			litShader.setMat4("mvp", mvpMatrix);	
 			//Provide model matrix to vertex shader
-			litShader.setMat4("modelMatrix", cubeModelMatrix);
+			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
 			litShader.setVec3("lightColor", lightColor);
+			//Transform camera world position to view position
+			glm::vec3 cameraViewPosition = game->GetViewMatrix() * glm::vec4(currentCamPosition, 1.0);
 			//Store positions
-			litShader.setVec3("viewWorldPos", currentCamPosition);
-			litShader.setVec3("lightPos", currentLightPos);
+			litShader.setVec3("cameraViewPosition", cameraViewPosition);
+			//Transform light world position to view position
+			glm::vec3 lightViewPosition = game->GetViewMatrix() * glm::vec4(currentLightPos, 1.0);
+			litShader.setVec3("lightViewPosition", lightViewPosition);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);
