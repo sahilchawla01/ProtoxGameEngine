@@ -362,7 +362,8 @@ int main()
 	};
 
 	// -- CREATE LIGHT OBJECT --
-	glm::vec3 lightPosition = glm::vec3(0.f, 1.0f, 4.f);
+	glm::vec3 orgLightPos = glm::vec3(0.f, 0.0f, 0.f);
+	glm::vec3 currentLightPos = orgLightPos;
 	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
 
 	//Create a VAO
@@ -523,7 +524,7 @@ int main()
 	//activate the shader program
 	litShader.use();
 	//Set light position 
-	litShader.setVec3("lightPos", lightPosition);
+	litShader.setVec3("lightPos", orgLightPos);
 	//Set texture unit values
 	/*litShader.setInt("texture1", 0);
 	litShader.setInt("texture2", 1);*/
@@ -566,8 +567,13 @@ int main()
 			glBindVertexArray(lightVAO);
 		
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
-			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
+			lightModelMatrix = glm::translate(lightModelMatrix, orgLightPos);
+			//Also rotate light in XZ plane
+			lightModelMatrix = glm::translate(lightModelMatrix, glm::vec3(cos(glfwGetTime()) * 5.f, sin(glfwGetTime()) + cos(glfwGetTime()), -sin(glfwGetTime()) * 5.f));
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
+
+			//Get current model matrix's position
+			currentLightPos = lightModelMatrix[3];
 
 			//Get mvp matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
@@ -614,7 +620,7 @@ int main()
 			litShader.setVec3("lightColor", lightColor);
 			//Store positions
 			litShader.setVec3("viewWorldPos", currentCamPosition);
-			litShader.setVec3("lightPos", lightPosition);
+			litShader.setVec3("lightPos", currentLightPos);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);
