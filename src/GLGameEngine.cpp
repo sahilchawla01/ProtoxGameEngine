@@ -617,14 +617,25 @@ int main()
 			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
-			litShader.setVec3("lightColor", lightColor);
 			//Transform camera world position to view position
 			glm::vec3 cameraViewPosition = game->GetViewMatrix() * glm::vec4(currentCamPosition, 1.0);
 			//Store positions
 			litShader.setVec3("cameraViewPosition", cameraViewPosition);
+			
+			//Set light values
+			litShader.setVec3("light.ambient", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("light.diffuse", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
 			//Transform light world position to view position
 			glm::vec3 lightViewPosition = game->GetViewMatrix() * glm::vec4(currentLightPos, 1.0);
-			litShader.setVec3("lightViewPosition", lightViewPosition);
+			litShader.setVec3("light.viewSpacePosition", lightViewPosition);
+
+
+			//Set material values
+			litShader.setVec3("mat.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+			litShader.setVec3("mat.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+			litShader.setVec3("mat.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+			litShader.setFloat("mat.shine", 32.0f);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);
