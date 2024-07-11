@@ -32,21 +32,26 @@ out vec4 FragColor;
 void main()
 {
 
-	//Calculate AMBIENT component of Phong
+	//-- Calculate AMBIENT component of Phong --
+
 	float ambientStrength = 0.1f;
 	vec3 ambient = light.ambient * ( ambientStrength * mat.ambient);
 
+
 	// -- Calculate DIFFUSE component of Phong -- 
+
 	float diffuseStrength = 0.5f;
 	vec3 finalNormal = normalize(normal);
-	//vec3 finalNormal = normalize(normal);
 	vec3 lightDirection = normalize(light.viewSpacePosition - FragViewPosition);
 	//Calculate dot product to get diffuse strength, and get max between 0 and dot product (to eradicate negative strength)
 	float diff = max(dot(finalNormal, lightDirection), 0.0);
 	//Final value for diffuse
 	vec3 diffuse =  light.diffuse * (diff * mat.diffuse);
 
+
 	//-- Calculate SPECULAR component of Phong -- 
+
+
 	float specularStrength = 0.5f;
 	vec3 viewDirection = normalize(cameraViewPosition - FragViewPosition);
 	vec3 reflectDir = reflect(-lightDirection, finalNormal);
@@ -55,7 +60,7 @@ void main()
 	//Finally calculate the specular vector
 	vec3 specular =  light.specular * specularStrength * (spec * mat.specular);
 	
-	//Get lighting resultant and multiply with object colour
+	//-- Calculate Phong RESULTANT -- 
 	vec3 phongResult = (ambient + diffuse + specular) * objectColor;
 
 	FragColor = vec4(phongResult, 1.0);

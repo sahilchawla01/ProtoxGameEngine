@@ -623,8 +623,8 @@ int main()
 			litShader.setVec3("cameraViewPosition", cameraViewPosition);
 			
 			//Set light values
-			litShader.setVec3("light.ambient", glm::vec3(1.f, 1.f, 1.f));
-			litShader.setVec3("light.diffuse", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			litShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
 			//Transform light world position to view position
 			glm::vec3 lightViewPosition = game->GetViewMatrix() * glm::vec4(currentLightPos, 1.0);
