@@ -568,9 +568,9 @@ int main()
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
 
 			lightPosition = glm::vec3(sin(glfwGetTime() * 2.f) * 2.f, 0.f, -cos(glfwGetTime() * 2.f) * 2.f);
-			
-			//Translate cube in a circular path on the XZ plane around origin
-			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition + glm::vec3(0.f, 0.f, 0.f));
+		
+			//Translate cube in a circular path on the XZ plane around light position
+			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
 
 			//Get mvp matrix 
@@ -613,6 +613,8 @@ int main()
 			litShader.setMat4("mvp", mvpMatrix);	
 			//Provide model matrix to vertex shader
 			litShader.setMat4("modelMatrix", cubeModelMatrix);
+			//Send model-view matrix to vertex 
+			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
 			litShader.setVec3("lightColor", lightColor);
