@@ -501,6 +501,8 @@ int main()
 	unsigned int containerTextureId = LoadUtility::loadTexture("assets/textures/container2.png");
 	//Also load the specular texture
 	unsigned int containerSpecularTexId = LoadUtility::loadTexture("assets/textures/container2_specular.png");
+	//Also load the emission texture
+	unsigned int containerEmissionTexId = LoadUtility::loadTexture("assets/textures/container2_emission.jpg");
 
 	//Create and setup mixng texture shader
 	Shader litShader("src/shaders/tests/lit-diffTex.vert", "src/shaders/tests/lit-diffTex.frag");
@@ -511,6 +513,7 @@ int main()
 	//Assign correct texture unit to the diffuse and specular uniform sampler
 	litShader.setInt("mat.diffuse", 0); // 0th texture unit (corresponds to GLTEXTURE0) => DIFFUSE MAP
 	litShader.setInt("mat.specular", 1); // 1st texture unit (corresponds to GLTEXTURE1) => SPECULAR MAP
+	litShader.setInt("mat.emission", 2); // 1st texture unit (corresponds to GLTEXTURE2) => EMISSION MAP
 
 
 	//Simple game logic:
@@ -617,6 +620,8 @@ int main()
 			glBindTexture(GL_TEXTURE_2D, containerTextureId);
 			glActiveTexture(GL_TEXTURE1); //mat.specular was set to this value
 			glBindTexture(GL_TEXTURE_2D, containerSpecularTexId);
+			glActiveTexture(GL_TEXTURE2); //mat.emission was set to this value
+			glBindTexture(GL_TEXTURE_2D, containerEmissionTexId);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);

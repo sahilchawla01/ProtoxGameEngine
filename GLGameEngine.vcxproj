@@ -181,7 +181,9 @@
     <Image Include="assets\textures\awesomeface.png" />
     <Image Include="assets\textures\container.jpg" />
     <Image Include="assets\textures\container2.png" />
+    <Image Include="assets\textures\container2_emission.jpg" />
     <Image Include="assets\textures\container2_specular.png" />
+    <Image Include="assets\textures\container2_specular_color.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

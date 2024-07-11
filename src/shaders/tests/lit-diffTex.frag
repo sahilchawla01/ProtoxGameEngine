@@ -7,6 +7,7 @@ struct Material
 	//In this case, ambient is removed, as it is the same colour as the diffuse, and we control the ambient with the light
 	sampler2D diffuse;
 	sampler2D specular;
+	sampler2D emission;
 	float shine;
 };
 
@@ -60,7 +61,11 @@ void main()
 	vec3 specular =  light.specular * spec * vec3(texture(mat.specular, TexCoords));
 	
 	// -- Calculate Phong RESULTANT -- 
-	vec3 phongResult = (ambient + diffuse + specular) * objectColor;
+	vec3 phongResult = (ambient + diffuse + specular)  * objectColor;
+
+	// -- EMISSION MAP --
+	//vec3 emission = vec3(texture(mat.emission, TexCoords));
+	//phongResult += emission;
 
 	FragColor = vec4(phongResult, 1.0);
 }
