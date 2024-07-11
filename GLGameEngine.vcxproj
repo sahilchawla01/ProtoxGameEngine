@@ -144,6 +144,7 @@
     <ClInclude Include="include\Actors\AActor.h" />
     <ClInclude Include="include\Actors\ACamera.h" />
     <ClInclude Include="include\GLGameEngine.h" />
+    <ClInclude Include="include\helpers\LoadUtility.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
   </ItemGroup>
@@ -152,30 +153,34 @@
     <ClCompile Include="src\Actors\ACamera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\GLGameEngine.cpp" />
+    <ClCompile Include="src\helpers\LoadUtility.cpp" />
     <ClCompile Include="src\helpers\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\simple-gourand-shader.frag" />
-    <None Include="src\shaders\simple-gourand-shader.vert" />
-    <None Include="src\shaders\color-wheel.frag" />
-    <None Include="src\shaders\color-wheel.vert" />
-    <None Include="src\shaders\lit-texture.frag" />
-    <None Include="src\shaders\lit-texture.vert" />
-    <None Include="src\shaders\simple-lit.frag" />
-    <None Include="src\shaders\simple-lit.vert" />
-    <None Include="src\shaders\unlit.frag" />
-    <None Include="src\shaders\unlit.vert" />
-    <None Include="src\shaders\mix-texture-mvp.vert" />
-    <None Include="src\shaders\mix-texture-transform.vert" />
-    <None Include="src\shaders\mix-texture.frag" />
-    <None Include="src\shaders\simple-texture.frag" />
-    <None Include="src\shaders\simple-texture.vert" />
-    <None Include="src\shaders\vertically-invert.vert" />
-    <None Include="src\shaders\xAxisUniformOffset.vert" />
+    <None Include="src\shaders\tests\lit-diffTex.frag" />
+    <None Include="src\shaders\tests\lit-diffTex.vert" />
+    <None Include="src\shaders\tests\simple-gourand-shader.frag" />
+    <None Include="src\shaders\tests\simple-gourand-shader.vert" />
+    <None Include="src\shaders\tests\color-wheel.frag" />
+    <None Include="src\shaders\tests\color-wheel.vert" />
+    <None Include="src\shaders\tests\lit-texture.frag" />
+    <None Include="src\shaders\tests\lit-texture.vert" />
+    <None Include="src\shaders\tests\simple-lit.frag" />
+    <None Include="src\shaders\tests\simple-lit.vert" />
+    <None Include="src\shaders\tests\unlit.frag" />
+    <None Include="src\shaders\tests\unlit.vert" />
+    <None Include="src\shaders\tests\mix-texture-mvp.vert" />
+    <None Include="src\shaders\tests\mix-texture-transform.vert" />
+    <None Include="src\shaders\tests\mix-texture.frag" />
+    <None Include="src\shaders\tests\simple-texture.frag" />
+    <None Include="src\shaders\tests\simple-texture.vert" />
+    <None Include="src\shaders\tests\vertically-invert.vert" />
+    <None Include="src\shaders\tests\xAxisUniformOffset.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\awesomeface.png" />
     <Image Include="assets\textures\container.jpg" />
+    <Image Include="assets\textures\container2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

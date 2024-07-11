@@ -1,8 +1,7 @@
 #include "GLGameEngine.h"
 #include <Shader.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #include <Actors/ACamera.h>
+#include <helpers/LoadUtility.h>
 
 
 Game::Game(GLFWwindow** wndPtr)
@@ -255,9 +254,6 @@ int main()
 	//Whenever frame buffer size changes, viewport size is changed
 	glfwSetFramebufferSizeCallback(window, game->FrameBufferSizeCallback);
 
-	//Create and setup mixng texture shader
-	Shader litShader("src/shaders/simple-lit.vert", "src/shaders/simple-lit.frag");
-
 	//Create a rectangle object and setup vertex input
 	//float cubeObjectVertices[] = {
 	//	//positions								//colors		//texture coordinate
@@ -316,7 +312,7 @@ int main()
 	};*/
 
 	//This cube includes vertex and NORMAL coordinates for each side of the cube
-	float cubeObjectVertices[] =
+	/*float cubeObjectVertices[] =
 	{
 	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -359,10 +355,56 @@ int main()
 	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
 	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
+	};*/
+
+	//This cube includes vertex, NORMAL, and texture coordinates for each side of the cube
+	float cubeObjectVertices[] = {
+	// positions          // normals           // texture coords
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+};
 
 	// -- CREATE LIGHT OBJECT --
-	glm::vec3 orgLightPos = glm::vec3(0.f, 0.0f, 0.f);
+	glm::vec3 orgLightPos = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 currentLightPos = orgLightPos;
 	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
 
@@ -383,7 +425,7 @@ int main()
 
 	//Instruct the VBO how to interpret the data
 	//vertex coord attrb
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//Unbind VBO, then unbind VAO
@@ -391,7 +433,7 @@ int main()
 	glBindVertexArray(0);
 
 	//Create and setup unlit shader for lightobject
-	Shader unlitShader("src/shaders/unlit.vert", "src/shaders/unlit.frag");
+	Shader unlitShader("src/shaders/tests/unlit.vert", "src/shaders/tests/unlit.frag");
 
 	//activate the shader program
 	unlitShader.use();
@@ -442,95 +484,31 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	//Finally, (Configure the vertex attribute) Tell OpenGl how to interpret vertex data 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//normal vector attribute
-	 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// texture coord attribute
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	//Unbind VBO, then unbind VAO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//Generate a first texture object
-	unsigned int containerTextureId;
-	glGenTextures(1, &containerTextureId);
-	//Activate texture unit (texture location) before binding texture
-	glActiveTexture(GL_TEXTURE0);
-	//Bind texture to currently bound 2d Texture
-	glBindTexture(GL_TEXTURE_2D, containerTextureId);
+	//Load the container texture to be used as diffuse texture
+	unsigned int containerTextureId = LoadUtility::loadTexture("assets/textures/container2.png");
 
-	//Set the texture filtering mode for wrapping, and scaling
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	//Flip y axis for images
-	stbi_set_flip_vertically_on_load(true);
-
-	//Load a sample texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("assets/textures/container.jpg", &width, &height, &nrChannels, 0);
-
-	if (data)
-	{
-		//Bind data (of texture) to GL_TEXTURE_2D
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		//Generate the mipmaps 
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "\nError, couldn't load container.jpg" << std::endl;
-	}
-	//Free image data
-	stbi_image_free(data);
-
-	//Generate a second texture object
-	unsigned int smileTexId;
-	glGenTextures(1, &smileTexId);
-	//Activate texture unit (texture location) before binding texture
-	glActiveTexture(GL_TEXTURE1);
-	//Bind texture to currently bound 2d Texture
-	glBindTexture(GL_TEXTURE_2D, smileTexId);
-
-	//Set the texture filtering mode for wrapping, and scaling
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	//Load a second texture
-	unsigned char* smileTexData = stbi_load("assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-
-	if (smileTexData)
-	{
-		//Bind smileTexData (of texture) to GL_TEXTURE_2D
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, smileTexData);
-		//Generate the mipmaps 
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "\nError, couldn't load awesomeface.png" << std::endl;
-	}
-	//Free image smileTexData
-	stbi_image_free(smileTexData);
+	//Create and setup mixng texture shader
+	Shader litShader("src/shaders/tests/lit-diffTex.vert", "src/shaders/tests/lit-diffTex.frag");
 
 	//activate the shader program
 	litShader.use();
-	//Set light position 
-	litShader.setVec3("lightPos", orgLightPos);
-	//Set texture unit values
-	/*litShader.setInt("texture1", 0);
-	litShader.setInt("texture2", 1);*/
-	
 
-	
+	//Assign correct texture unit to the diffuse uniform sampler
+	litShader.setInt("mat.diffuse", 0);
+
 
 	//Simple game logic:
 		//Process input
@@ -588,12 +566,6 @@ int main()
 		}
 		// -- Start drawing all the cubes --
 
-		//Bind textures to corresponding texture units
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, containerTextureId);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, smileTexId);
-
 		//Activate shader
 		litShader.use();
 
@@ -634,8 +606,12 @@ int main()
 			//Set material values
 			litShader.setVec3("mat.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
 			litShader.setVec3("mat.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-			litShader.setVec3("mat.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-			litShader.setFloat("mat.shine", 32.0f);
+			litShader.setVec3("mat.specular", glm::vec3(0.3f, 0.3f, 0.3f));
+			litShader.setFloat("mat.shine", 16.0f);
+
+			//Bind textures to corresponding texture units
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, containerTextureId);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);

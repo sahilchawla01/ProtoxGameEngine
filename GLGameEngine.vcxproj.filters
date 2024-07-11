@@ -33,6 +33,9 @@
     <ClInclude Include="include\Actors\AActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\helpers\LoadUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLGameEngine.cpp">
@@ -50,31 +53,39 @@
     <ClCompile Include="src\Actors\AActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\helpers\LoadUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\color-wheel.vert" />
-    <None Include="src\shaders\color-wheel.frag" />
-    <None Include="src\shaders\vertically-invert.vert" />
-    <None Include="src\shaders\xAxisUniformOffset.vert" />
-    <None Include="src\shaders\simple-texture.vert" />
-    <None Include="src\shaders\simple-texture.frag" />
-    <None Include="src\shaders\mix-texture.frag" />
-    <None Include="src\shaders\mix-texture-transform.vert" />
-    <None Include="src\shaders\mix-texture-mvp.vert" />
-    <None Include="src\shaders\lit-texture.frag" />
-    <None Include="src\shaders\lit-texture.vert" />
-    <None Include="src\shaders\simple-lit.frag" />
-    <None Include="src\shaders\simple-lit.vert" />
-    <None Include="src\shaders\unlit.frag" />
-    <None Include="src\shaders\unlit.vert" />
-    <None Include="src\shaders\simple-gourand-shader.vert" />
-    <None Include="src\shaders\simple-gourand-shader.frag" />
+    <None Include="src\shaders\tests\color-wheel.vert" />
+    <None Include="src\shaders\tests\color-wheel.frag" />
+    <None Include="src\shaders\tests\vertically-invert.vert" />
+    <None Include="src\shaders\tests\xAxisUniformOffset.vert" />
+    <None Include="src\shaders\tests\simple-texture.vert" />
+    <None Include="src\shaders\tests\simple-texture.frag" />
+    <None Include="src\shaders\tests\mix-texture.frag" />
+    <None Include="src\shaders\tests\mix-texture-transform.vert" />
+    <None Include="src\shaders\tests\mix-texture-mvp.vert" />
+    <None Include="src\shaders\tests\lit-texture.frag" />
+    <None Include="src\shaders\tests\lit-texture.vert" />
+    <None Include="src\shaders\tests\simple-lit.frag" />
+    <None Include="src\shaders\tests\simple-lit.vert" />
+    <None Include="src\shaders\tests\unlit.frag" />
+    <None Include="src\shaders\tests\unlit.vert" />
+    <None Include="src\shaders\tests\simple-gourand-shader.vert" />
+    <None Include="src\shaders\tests\simple-gourand-shader.frag" />
+    <None Include="src\shaders\tests\lit-diffTex.vert" />
+    <None Include="src\shaders\tests\lit-diffTex.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="assets\textures\awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\textures\container2.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
