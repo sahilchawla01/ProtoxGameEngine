@@ -1,11 +1,12 @@
 #version 330 core
 //This frag shader, is different from the previous "simple-lit.frag" as it contains a diffuse texture rather than a diffuse vec3 color
+//We also change the specular vec3 to a texture
 
 struct Material 
 {
 	//In this case, ambient is removed, as it is the same colour as the diffuse, and we control the ambient with the light
 	sampler2D diffuse;
-	vec3 specular;
+	sampler2D specular;
 	float shine;
 };
 
@@ -56,7 +57,7 @@ void main()
 	//Here, 32 is the "shinyness" value of the object i.e a property of the material 
 	float spec = pow(max(dot(viewDirection, reflectDir), 0.0), mat.shine);
 	//Finally calculate the specular vector
-	vec3 specular =  light.specular * (spec * mat.specular);
+	vec3 specular =  light.specular * spec * vec3(texture(mat.specular, TexCoords));
 	
 	// -- Calculate Phong RESULTANT -- 
 	vec3 phongResult = (ambient + diffuse + specular) * objectColor;
