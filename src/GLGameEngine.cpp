@@ -362,7 +362,8 @@ int main()
 	};
 
 	// -- CREATE LIGHT OBJECT --
-	glm::vec3 lightPosition = glm::vec3(0.f, 1.0f, 4.f);
+	glm::vec3 orgLightPos = glm::vec3(0.f, 0.0f, 0.f);
+	glm::vec3 currentLightPos = orgLightPos;
 	glm::vec3 lightColor = glm::vec3(1.f, 1.f, 1.f);
 
 	//Create a VAO
@@ -523,7 +524,7 @@ int main()
 	//activate the shader program
 	litShader.use();
 	//Set light position 
-	litShader.setVec3("lightPos", lightPosition);
+	litShader.setVec3("lightPos", orgLightPos);
 	//Set texture unit values
 	/*litShader.setInt("texture1", 0);
 	litShader.setInt("texture2", 1);*/
@@ -566,12 +567,13 @@ int main()
 			glBindVertexArray(lightVAO);
 		
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
-
-			lightPosition = glm::vec3(sin(glfwGetTime() * 2.f) * 2.f, 0.f, -cos(glfwGetTime() * 2.f) * 2.f);
-		
-			//Translate cube in a circular path on the XZ plane around light position
-			lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
+			lightModelMatrix = glm::translate(lightModelMatrix, orgLightPos);
+			//Also rotate light in XZ plane
+			lightModelMatrix = glm::translate(lightModelMatrix, glm::vec3(cos(glfwGetTime()) * 5.f, sin(glfwGetTime()) + cos(glfwGetTime()), -sin(glfwGetTime()) * 5.f));
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
+
+			//Get current model matrix's position
+			currentLightPos = lightModelMatrix[3];
 
 			//Get mvp matrix 
 			glm::mat4 mvpMatrix = glm::mat4(1.f);
@@ -612,15 +614,28 @@ int main()
 			//Provide MVP matrix to the vertex shader
 			litShader.setMat4("mvp", mvpMatrix);	
 			//Provide model matrix to vertex shader
-			litShader.setMat4("modelMatrix", cubeModelMatrix);
-			//Send model-view matrix to vertex 
 			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
-			litShader.setVec3("lightColor", lightColor);
+			//Transform camera world position to view position
+			glm::vec3 cameraViewPosition = game->GetViewMatrix() * glm::vec4(currentCamPosition, 1.0);
 			//Store positions
-			litShader.setVec3("viewWorldPos", currentCamPosition);
-			litShader.setVec3("lightPos", lightPosition);
+			litShader.setVec3("cameraViewPosition", cameraViewPosition);
+			
+			//Set light values
+			litShader.setVec3("light.ambient", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("light.diffuse", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
+			//Transform light world position to view position
+			glm::vec3 lightViewPosition = game->GetViewMatrix() * glm::vec4(currentLightPos, 1.0);
+			litShader.setVec3("light.viewSpacePosition", lightViewPosition);
+
+
+			//Set material values
+			litShader.setVec3("mat.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+			litShader.setVec3("mat.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+			litShader.setVec3("mat.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+			litShader.setFloat("mat.shine", 32.0f);
 
 			//Draw the light object
 			glDrawArrays(GL_TRIANGLES, 0, 36);
