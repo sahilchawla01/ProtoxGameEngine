@@ -505,7 +505,7 @@ int main()
 	unsigned int containerEmissionTexId = LoadUtility::loadTexture("assets/textures/container2_emission.jpg");
 
 	//Create and setup mixng texture shader
-	Shader litShader("src/shaders/tests/lit-diffTex.vert", "src/shaders/tests/lit-diffTex.frag");
+	Shader litShader("src/shaders/tests/lit-differentLightSrcs.vert", "src/shaders/tests/lit-differentLightSrcs.frag");
 
 	//activate the shader program
 	litShader.use();
@@ -517,9 +517,12 @@ int main()
 
 
 	//Simple game logic:
-		//Process input
-		//Update
-		//Render
+	// 
+	//Process input
+	//Update
+	//Render
+	//
+
 	// -- GAME LOOP -- 
 	while (!glfwWindowShouldClose(window)) 
 	{
@@ -553,7 +556,7 @@ int main()
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
 			lightModelMatrix = glm::translate(lightModelMatrix, orgLightPos);
 			//Also rotate light in XZ plane
-			lightModelMatrix = glm::translate(lightModelMatrix, glm::vec3(cos(glfwGetTime()) * 5.f, sin(glfwGetTime()) + cos(glfwGetTime()), -sin(glfwGetTime()) * 5.f));
+			lightModelMatrix = glm::translate(lightModelMatrix, glm::vec3(cos(glfwGetTime()) * 4.f, sin(glfwGetTime()) + cos(glfwGetTime()), -sin(glfwGetTime()) * 4.f));
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
 
 			//Get current model matrix's position
@@ -589,10 +592,11 @@ int main()
 			ACamera* currCamera = game->GetActiveCamera();
 			glm::vec3 currentCamPosition = (currCamera) ? currCamera->currentCameraPosition : glm::vec3(0.f, 0.f, 0.f);
 
-			//Provide MVP matrix to the vertex shader
+			//Provide all matrices to the vertex shader
 			litShader.setMat4("mvp", mvpMatrix);	
-			//Provide model matrix to vertex shader
 			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
+			litShader.setMat4("modelMatrix", cubeModelMatrix);
+
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
 			//Transform camera world position to view position
@@ -600,14 +604,18 @@ int main()
 			//Store positions
 			litShader.setVec3("cameraViewPosition", cameraViewPosition);
 			
-			//Set light values
+			//-- Set light values --
 			litShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 			litShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
-			//Transform light world position to view position
+
+			litShader.setVec3("light.worldPosition", currentLightPos);
 			glm::vec3 lightViewPosition = game->GetViewMatrix() * glm::vec4(currentLightPos, 1.0);
 			litShader.setVec3("light.viewSpacePosition", lightViewPosition);
-
+			//Set attenuation constants
+			litShader.setFloat("light.constant", 1.0f);
+			litShader.setFloat("light.linear", 0.09f);
+			litShader.setFloat("light.quadratic", 0.032f);
 
 			//Set material values
 			litShader.setVec3("mat.ambient", glm::vec3(1.0f, 0.5f, 0.31f));

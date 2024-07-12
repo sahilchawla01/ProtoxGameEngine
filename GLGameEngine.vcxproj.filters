@@ -77,6 +77,8 @@
     <None Include="src\shaders\tests\simple-gourand-shader.frag" />
     <None Include="src\shaders\tests\lit-diffTex.vert" />
     <None Include="src\shaders\tests\lit-diffTex.frag" />
+    <None Include="src\shaders\tests\lit-differentLightSrcs.vert" />
+    <None Include="src\shaders\tests\lit-differentLightSrcs.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">

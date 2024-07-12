@@ -157,6 +157,8 @@
     <ClCompile Include="src\helpers\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shaders\tests\lit-differentLightSrcs.frag" />
+    <None Include="src\shaders\tests\lit-differentLightSrcs.vert" />
     <None Include="src\shaders\tests\lit-diffTex.frag" />
     <None Include="src\shaders\tests\lit-diffTex.vert" />
     <None Include="src\shaders\tests\simple-gourand-shader.frag" />
