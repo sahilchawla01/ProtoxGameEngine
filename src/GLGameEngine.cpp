@@ -590,7 +590,7 @@ int main()
 
 			//Get current camera
 			ACamera* currCamera = game->GetActiveCamera();
-			glm::vec3 currentCamPosition = (currCamera) ? currCamera->currentCameraPosition : glm::vec3(0.f, 0.f, 0.f);
+			glm::vec3 currentCamPosition = (currCamera) ? currCamera->GetCameraWorldPosition() : glm::vec3(0.f, 0.f, 0.f);
 
 			//Provide all matrices to the vertex shader
 			litShader.setMat4("mvp", mvpMatrix);	
@@ -605,7 +605,7 @@ int main()
 			litShader.setVec3("cameraViewPosition", cameraViewPosition);
 			
 			//-- Set light values --
-			litShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			litShader.setVec3("light.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
 			litShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
 
@@ -616,12 +616,22 @@ int main()
 			litShader.setFloat("light.constant", 1.0f);
 			litShader.setFloat("light.linear", 0.09f);
 			litShader.setFloat("light.quadratic", 0.032f);
+			 
+			//--Set spotlight values--
+			litShader.setVec3("flashLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+			litShader.setVec3("flashLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			litShader.setVec3("flashLight.specular", glm::vec3(1.f, 1.f, 1.f));
+			litShader.setVec3("flashLight.worldPosition", currCamera->GetCameraWorldPosition());
+			litShader.setVec3("flashLight.direction", currCamera->GetCameraForwardDirVector());
+			litShader.setFloat("flashLight.cutOff", glm::cos(glm::radians(10.5f)));
+			litShader.setFloat("flashLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+			//set distance falloff values
+			litShader.setFloat("flashLight.constant", 1.0f);
+			litShader.setFloat("flashLight.linear", 0.09f);
+			litShader.setFloat("flashLight.quadratic", 0.032f);
 
 			//Set material values
-			litShader.setVec3("mat.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-			litShader.setVec3("mat.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-			litShader.setVec3("mat.specular", glm::vec3(0.3f, 0.3f, 0.3f));
-			litShader.setFloat("mat.shine", 16.0f);
+			litShader.setFloat("mat.shine", 32.0f);
 
 			//Bind textures to corresponding texture units
 			glActiveTexture(GL_TEXTURE0); //mat.diffuse was set to this value
