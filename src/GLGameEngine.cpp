@@ -605,7 +605,7 @@ int main()
 			litShader.setVec3("cameraViewPosition", cameraViewPosition);
 			
 			//-- Set light values --
-			litShader.setVec3("light.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+			litShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 			litShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 			litShader.setVec3("light.specular", glm::vec3(1.f, 1.f, 1.f));
 
@@ -618,7 +618,7 @@ int main()
 			litShader.setFloat("light.quadratic", 0.032f);
 			 
 			//--Set spotlight values--
-			litShader.setVec3("flashLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+			litShader.setVec3("flashLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
 			litShader.setVec3("flashLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 			litShader.setVec3("flashLight.specular", glm::vec3(1.f, 1.f, 1.f));
 			litShader.setVec3("flashLight.worldPosition", currCamera->GetCameraWorldPosition());

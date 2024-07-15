@@ -25,6 +25,16 @@ struct Light {
     float quadratic;
 };
 
+struct DirectionalLight
+{
+	vec3 direction;
+
+	//light's color values
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
 struct SpotLight {
 	vec3  worldPosition;
     vec3  direction;
@@ -42,9 +52,12 @@ struct SpotLight {
     float quadratic;
 };
 
-uniform Material mat;
+//-- Light uniforms -- 
 uniform Light light;
 uniform SpotLight flashLight;
+uniform DirectionalLight dirLight;
+
+uniform Material mat;
 
 uniform vec3 objectColor;
 //Redundant as camera view position in view space is 0,0,0
