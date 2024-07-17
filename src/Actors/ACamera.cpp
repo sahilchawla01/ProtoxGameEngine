@@ -27,7 +27,7 @@ void ACamera::UpdateViewMatrix()
 	//The new view matrix is based on the 3 coordinate system with the camera at the center, using the cameraUp direction, camera front direction and currentCamera position
 	viewMatrix = CalculateLookAtMatrix(currentCameraPosition, currentCameraPosition + cameraFront, worldUp);
 
-	std::cout << "\nDisplay: (ACamera) Camera view matrix updated!\n";
+	//std::cout << "\nDisplay: (ACamera) Camera view matrix updated!\n";
 }
 
 void ACamera::UpdateCameraDirectionVectors()
@@ -55,7 +55,7 @@ void ACamera::UpdateCameraDirectionVectors()
 
 void ACamera::UpdateProjectionMatrix()
 {
-	std::cout << "\nUpdating Projection matrix.. FOV: " << GetCameraFov() << "\t Aspect Ratio: " << cameraAspectRatio;
+	//std::cout << "\nUpdating Projection matrix.. FOV: " << GetCameraFov() << "\t Aspect Ratio: " << cameraAspectRatio;
 	//Updates the projection matrix according to new fov of camera
 	projectionMatrix = glm::perspective(glm::radians(GetCameraFov()), cameraAspectRatio, 0.1f, 100.f);
 }
@@ -224,7 +224,7 @@ void ACamera::ProcessScrollInput(float xOffset, float yOffset)
 	//Finally, set camera fov according to step 
 	SetCameraFov(currCameraFov - (cameraFovStep * zoomDirectionScale));
 
-	std::cout << "\nDisplay: (ACamera) Camera Fov set to : " << GetCameraFov();
+	//std::cout << "\nDisplay: (ACamera) Camera Fov set to : " << GetCameraFov();
 }
 
 void ACamera::SetCameraFov(float newFov)
@@ -236,10 +236,22 @@ void ACamera::SetCameraFov(float newFov)
 	//Set new camera fov
 	cameraFov = newFov;
 
-	std::cout << "\nNew camera fov: " << newFov;
+	//std::cout << "\nNew camera fov: " << newFov;
 
 	//With new fov, update projection matrix
 	UpdateProjectionMatrix();
+}
+
+glm::vec3 ACamera::GetCameraWorldPosition()
+{
+	//std::cout << "Current camera position:\t" << currentCameraPosition.x << "||	" << currentCameraPosition.y << "||	" << currentCameraPosition.z<<"\n";
+	return currentCameraPosition;
+}
+
+glm::vec3 ACamera::GetCameraForwardDirVector()
+{
+	//std::cout << "\nCurrent camera front direction:\t" << cameraFront.x << "||" << cameraFront.y << "||	" << cameraFront.z<<"\n";
+	return cameraFront;
 }
 
 glm::mat4 ACamera::GetViewMatrix()

@@ -102,8 +102,8 @@ public:
 	//Get the camera's fov in float 
 	float GetCameraFov() { return cameraFov; };
 	//Simply return camera's world position
-	glm::vec3 GetCameraWorldPosition() { return currentCameraPosition; };
-	glm::vec3 GetCameraForwardDirVector() { return cameraFront; };
+	glm::vec3 GetCameraWorldPosition();
+	glm::vec3 GetCameraForwardDirVector();
 
 
 	//Get matrices

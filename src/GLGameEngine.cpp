@@ -618,17 +618,24 @@ int main()
 			litShader.setFloat("light.quadratic", 0.032f);
 			 
 			//--Set spotlight values--
-			litShader.setVec3("flashLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			litShader.setVec3("flashLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
 			litShader.setVec3("flashLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 			litShader.setVec3("flashLight.specular", glm::vec3(1.f, 1.f, 1.f));
-			litShader.setVec3("flashLight.worldPosition", currCamera->GetCameraWorldPosition());
+			litShader.setVec3("flashLight.worldPosition", currentCamPosition);
 			litShader.setVec3("flashLight.direction", currCamera->GetCameraForwardDirVector());
 			litShader.setFloat("flashLight.cutOff", glm::cos(glm::radians(10.5f)));
-			litShader.setFloat("flashLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+			litShader.setFloat("flashLight.outerCutOff", glm::cos(glm::radians(13.5f)));
 			//set distance falloff values
 			litShader.setFloat("flashLight.constant", 1.0f);
 			litShader.setFloat("flashLight.linear", 0.09f);
 			litShader.setFloat("flashLight.quadratic", 0.032f);
+
+			//--Set directional light values--
+			litShader.setVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+			litShader.setVec3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			litShader.setVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+			litShader.setVec3("dirLight.specular", glm::vec3(0.6f, 0.6f, 0.6f));
+
 
 			//Set material values
 			litShader.setFloat("mat.shine", 32.0f);

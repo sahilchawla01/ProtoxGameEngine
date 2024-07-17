@@ -60,7 +60,7 @@ uniform DirectionalLight dirLight;
 uniform Material mat;
 
 uniform vec3 objectColor;
-//Redundant as camera view position in view space is 0,0,0
+//Redundant as camera view position in view space is 0,0,0 [ Only for learning purposes ]
 uniform vec3 cameraViewPosition;
 
 in vec3 normal;
@@ -118,56 +118,42 @@ vec3 CalculateSpotLightPhong(SpotLight spotLight)
 	vec3 phongResult = vec3(0.f);
 	vec3 lightDirection = normalize(spotLight.worldPosition - FragWorldPosition);
 
+	// -- Calculate AMBIENT component of Phong --
+
+	//Ambient becomes the same as diffuse's color
+	vec3 ambient = spotLight.ambient * vec3(texture(mat.diffuse, TexCoords));
+	//Ambient light is not affected by intensity
+
+	// -- Calculate DIFFUSE component of Phong -- 
+
+	vec3 finalNormal = normalize(normal);
+	//Calculate dot product to get diffuse strength, and get max between 0 and dot product (to eradicate negative strength)
+	float diff = max(dot(finalNormal, lightDirection), 0.0);
+	//Final value for diffuse
+	vec3 diffuse =  spotLight.diffuse * diff * vec3(texture(mat.diffuse, TexCoords));
+
+	// -- Calculate SPECULAR component of Phong -- 
+
+	vec3 viewDirection = normalize(cameraViewPosition - FragViewPosition);
+	vec3 reflectDir = reflect(-lightDirection, finalNormal);
+	//Here, 32 is the "shinyness" value of the object i.e a property of the material 
+	float spec = pow(max(dot(viewDirection, reflectDir), 0.0), mat.shine);
+	//Finally calculate the specular vector
+	vec3 specular =  spotLight.specular * spec * vec3(texture(mat.specular, TexCoords));
+
 	//This gives the cosine value (not the angle in degrees/radians), between the LightDirection and SpotLightDirection
 	float theta = dot(lightDirection, normalize(-spotLight.direction));
-	float epsilon   = abs(spotLight.cutOff - spotLight.outerCutOff);
+	//Calculate light falloff within cuttoff cone
+	float epsilon   = (spotLight.cutOff - spotLight.outerCutOff);
 	float intensity = clamp((theta - spotLight.outerCutOff) / epsilon, 0.0, 1.0);    
 
-	//If fragment is not within cutOff, we simply ignore diffuse and specular components
-	//Here > is used, because we're comparing COSINE VALUES, not angles, a SMALLER angle gives a BIGGER cosine value
-	if(theta > spotLight.cutOff)
-	{
-		// -- Calculate AMBIENT component of Phong --
-
-		//Ambient becomes the same as diffuse's color
-		vec3 ambient = spotLight.ambient * vec3(texture(mat.diffuse, TexCoords));
-		//Ambient light is not affected by intensity
-
-		// -- Calculate DIFFUSE component of Phong -- 
-
-		vec3 finalNormal = normalize(normal);
-		//Calculate dot product to get diffuse strength, and get max between 0 and dot product (to eradicate negative strength)
-		float diff = max(dot(finalNormal, lightDirection), 0.0);
-		//Final value for diffuse
-		vec3 diffuse =  spotLight.diffuse * diff * vec3(texture(mat.diffuse, TexCoords));
-
-		//Influence diffuse component with spotlight intensity
-		diffuse *= intensity;
-
-		// -- Calculate SPECULAR component of Phong -- 
-
-		vec3 viewDirection = normalize(cameraViewPosition - FragViewPosition);
-		vec3 reflectDir = reflect(-lightDirection, finalNormal);
-		//Here, 32 is the "shinyness" value of the object i.e a property of the material 
-		float spec = pow(max(dot(viewDirection, reflectDir), 0.0), mat.shine);
-		//Finally calculate the specular vector
-		vec3 specular =  spotLight.specular * spec * vec3(texture(mat.specular, TexCoords));
-
-		//Influence specular component with intensity
-		specular *= intensity;
+	//Influence diffuse component with spotlight intensity
+	diffuse *= intensity;
+	//Influence specular component with intensity
+	specular *= intensity;
 		
-		// -- Calculate Phong RESULTANT -- 
-		phongResult = (ambient + diffuse + specular)  * objectColor;
-	}
-	else 
-	{
-		//Ambient becomes the same as diffuse's color
-		vec3 ambient = spotLight.ambient * vec3(texture(mat.diffuse, TexCoords));
-		//Ambient light is not affected by intensity
-
-		// -- Calculate Phong RESULTANT -- 
-		phongResult = (ambient) * objectColor;	
-	}
+	// -- Calculate Phong RESULTANT -- 
+	phongResult = (ambient + diffuse + specular)  * objectColor;
 
 	// attenuation
     float distance  = length(spotLight.worldPosition - FragWorldPosition);
@@ -175,6 +161,38 @@ vec3 CalculateSpotLightPhong(SpotLight spotLight)
 
 	//Influence phongResult with attenuation
 	phongResult *= attenuation;
+
+	return phongResult;
+}
+
+vec3 CalculateDirLightPhong(DirectionalLight dirLight)
+{
+	// -- Calculate AMBIENT component of Phong --
+
+	//Ambient becomes the same as diffuse's color
+	vec3 ambient = dirLight.ambient * vec3(texture(mat.diffuse, TexCoords));
+
+	// -- Calculate DIFFUSE component of Phong -- 
+
+	vec3 finalNormal = normalize(normal);
+	vec3 lightDirection = normalize(-dirLight.direction);
+	//Calculate dot product to get diffuse strength, and get max between 0 and dot product (to eradicate negative strength)
+	float diff = max(dot(finalNormal, lightDirection), 0.0);
+	//Final value for diffuse
+	vec3 diffuse =  dirLight.diffuse * diff * vec3(texture(mat.diffuse, TexCoords));
+
+
+	// -- Calculate SPECULAR component of Phong -- 
+
+	vec3 viewDirection = normalize(cameraViewPosition - FragViewPosition);
+	vec3 reflectDir = reflect(-lightDirection, finalNormal);
+	//Here, 32 is the "shinyness" value of the object i.e a property of the material 
+	float spec = pow(max(dot(viewDirection, reflectDir), 0.0), mat.shine);
+	//Finally calculate the specular vector
+	vec3 specular =  dirLight.specular * spec * vec3(texture(mat.specular, TexCoords));
+	
+	// -- Calculate Phong RESULTANT -- 
+	vec3 phongResult = (ambient + diffuse + specular)  * objectColor;
 
 	return phongResult;
 }
@@ -188,7 +206,10 @@ void main()
 	//Get the spot light's influence (i.e flashlight as camera)
 	vec3 flashLightPhongResult = CalculateSpotLightPhong(flashLight);
 
-	vec3 totalPhongResult = pointLightPhongResult + flashLightPhongResult;
+	//Get direction light's incluence
+	vec3 dirLightPhongResult = CalculateDirLightPhong(dirLight);
+
+	vec3 totalPhongResult = pointLightPhongResult + flashLightPhongResult + dirLightPhongResult;
 
 	FragColor = vec4(totalPhongResult, 1.0);
 }
