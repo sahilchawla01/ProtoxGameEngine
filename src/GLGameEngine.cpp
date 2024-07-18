@@ -2,7 +2,7 @@
 #include <Shader.h>
 #include <Actors/ACamera.h>
 #include <helpers/LoadUtility.h>
-
+#include <vector>
 
 Game::Game(GLFWwindow** wndPtr)
 {
@@ -452,6 +452,18 @@ int main()
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};*/
 
+	std::vector<glm::vec3> cubePositions = {
+	glm::vec3(0.0f,  1.0f,  0.0f),
+	glm::vec3(1.0f,  0.0f, 0.0f),
+	glm::vec3(-1.0f,  0.0f, 0.0f),
+	glm::vec3(0.0f,  0.0f, -1.0f),
+	glm::vec3(0.0f,  0.0f, 1.0f),
+	glm::vec3(-1.0f,  0.0f, -1.0f),
+	glm::vec3(-1.0f,  0.0f, 1.0f),
+	glm::vec3(1.0f,  0.0f, -1.0f),
+	glm::vec3(1.0f,  0.0f, 1.0f),
+	};
+
 	unsigned int indices[] =
 	{
 		//First triangle
@@ -555,7 +567,7 @@ int main()
 		
 			glm::mat4 lightModelMatrix = glm::mat4(1.f);
 			lightModelMatrix = glm::translate(lightModelMatrix, orgLightPos);
-			//Also rotate light in XZ plane
+			////Also rotate light in XZ plane
 			lightModelMatrix = glm::translate(lightModelMatrix, glm::vec3(cos(glfwGetTime()) * 4.f, sin(glfwGetTime()) + cos(glfwGetTime()), -sin(glfwGetTime()) * 4.f));
 			lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3(0.2f));
 
@@ -578,24 +590,12 @@ int main()
 		//Activate shader
 		litShader.use();
 
-		// -- DRAW 1 CUBE --
+		// -- DRAW N CUBEs --
 		{
-			glBindVertexArray(VAO);
-
-			glm::mat4 cubeModelMatrix = glm::mat4(1.f);
-
-			//Get mvp matrix 
-			glm::mat4 mvpMatrix = glm::mat4(1.f);
-			mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * cubeModelMatrix;
 
 			//Get current camera
 			ACamera* currCamera = game->GetActiveCamera();
 			glm::vec3 currentCamPosition = (currCamera) ? currCamera->GetCameraWorldPosition() : glm::vec3(0.f, 0.f, 0.f);
-
-			//Provide all matrices to the vertex shader
-			litShader.setMat4("mvp", mvpMatrix);	
-			litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
-			litShader.setMat4("modelMatrix", cubeModelMatrix);
 
 			//Provide object color and light color
 			litShader.setVec3("objectColor", glm::vec3(1.f, 1.f, 1.f));
@@ -648,57 +648,29 @@ int main()
 			glActiveTexture(GL_TEXTURE2); //mat.emission was set to this value
 			glBindTexture(GL_TEXTURE_2D, containerEmissionTexId);
 
-			//Draw the light object
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		}
-
-		// -- DRAW 10 CUBES (COMMENTED) --
-		/*{
-			glm::mat4 model = glm::mat4(1.f);
-			model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.f), glm::vec3(1.f, 0.5f, 0.f));
-
-			//Draw textured cube
-			glBindVertexArray(VAO);
-
-			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-			for (int i = 0; i < 10; i++)
+		
+			for (int itr = 0; itr < cubePositions.size(); itr++)
 			{
-				//Change object position through model matrix
-				model = glm::mat4(1.f);
-				model = glm::translate(model, cubePositions[i]);
-				float angle = 10.f * i;
+				
+				glBindVertexArray(VAO);
 
-				if (i == 0) angle = 20.f;
+				glm::mat4 cubeModelMatrix = glm::mat4(1.f);
+				cubeModelMatrix = glm::translate(cubeModelMatrix, cubePositions[itr]);
 
-				if (i != 0) model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()), glm::vec3(0.3f, 1.f, 0.5f));
-
-				//Change view matrix
-				//const float radius = 10.0f;
-				//float camX = sin(glfwGetTime()) * radius;
-				//float camZ = cos(glfwGetTime()) * radius;
-				//game->SetViewMatrix(glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0)));
-
-				//Create MVP matrix 
+				//Get mvp matrix 
 				glm::mat4 mvpMatrix = glm::mat4(1.f);
-				mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * model;
+				mvpMatrix = game->GetProjectionMatrix() * game->GetViewMatrix() * cubeModelMatrix;
 
-				unsigned int mvpUniLocation = glGetUniformLocation(litShader.ID, "mvp");
-				//Provide MVP matrix to the vertex shader
-				glUniformMatrix4fv(mvpUniLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
-
-				//Sendobject and light color to frag shader
-				litShader.setVec3("objectColor", glm::vec3(0.5f, 0.5f, 1.f));
-				litShader.setVec3("lightColor", lightColor);
+				//Provide all transformations to the vertex shader
+				litShader.setMat4("mvp", mvpMatrix);
+				litShader.setMat4("modelViewMatrix", game->GetViewMatrix() * cubeModelMatrix);
+				litShader.setMat4("modelMatrix", cubeModelMatrix);
 
 
-				//Draw the triangle
+				//Draw the light object
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
-			
 		}
-	*/
 	
 		//
 		//

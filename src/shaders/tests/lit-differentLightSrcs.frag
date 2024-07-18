@@ -53,6 +53,9 @@ struct SpotLight {
 };
 
 //-- Light uniforms -- 
+//#define NR_POINT_LIGHTS 4
+
+//uniform Light light[NR_POINT_LIGHTS];
 uniform Light light;
 uniform SpotLight flashLight;
 uniform DirectionalLight dirLight;
@@ -199,14 +202,18 @@ vec3 CalculateDirLightPhong(DirectionalLight dirLight)
 
 void main()
 {
-
-	//Get the point light's influence 
+	
+	//--Step 1: Calculate influence of all point lights --
 	vec3 pointLightPhongResult = CalculatePointLightPhong(light);
+//	for(int i = 0; i < NR_POINT_LIGHTS; i++) //Iterate and add each point light's influence;
+		 // pointLightPhongResult += CalculatePointLightPhong(light[i]);
 
-	//Get the spot light's influence (i.e flashlight as camera)
+
+
+	//-- Step 2: Get the spot light's influence (i.e flashlight as camera) --
 	vec3 flashLightPhongResult = CalculateSpotLightPhong(flashLight);
 
-	//Get direction light's incluence
+	//-- Step 3: Get direction light's incluence --
 	vec3 dirLightPhongResult = CalculateDirLightPhong(dirLight);
 
 	vec3 totalPhongResult = pointLightPhongResult + flashLightPhongResult + dirLightPhongResult;
