@@ -12,3 +12,9 @@
 ##Features to add
 -ImGui and integrate with parameters as required
 -Model(obj/fbx) loading
+
+#Libraries Used:
+-GLFW
+-Glad
+-GLM
+-STB
