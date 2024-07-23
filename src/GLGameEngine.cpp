@@ -433,7 +433,7 @@ int main()
 	glBindVertexArray(0);
 
 	//Create and setup unlit shader for lightobject
-	Shader unlitShader("src/shaders/tests/unlit.vert", "src/shaders/tests/unlit.frag");
+	Shader unlitShader("../../../src/shaders/tests/unlit.vert", "../../../src/shaders/tests/unlit.frag");
 
 	//activate the shader program
 	unlitShader.use();
@@ -510,14 +510,14 @@ int main()
 	glBindVertexArray(0);
 
 	//Load the container texture to be used as diffuse texture
-	unsigned int containerTextureId = LoadUtility::loadTexture("assets/textures/container2.png");
+	unsigned int containerTextureId = LoadUtility::loadTexture("../../../assets/textures/container2.png");
 	//Also load the specular texture
-	unsigned int containerSpecularTexId = LoadUtility::loadTexture("assets/textures/container2_specular.png");
+	unsigned int containerSpecularTexId = LoadUtility::loadTexture("../../../assets/textures/container2_specular.png");
 	//Also load the emission texture
-	unsigned int containerEmissionTexId = LoadUtility::loadTexture("assets/textures/container2_emission.jpg");
+	unsigned int containerEmissionTexId = LoadUtility::loadTexture("../../../assets/textures/container2_emission.jpg");
 
 	//Create and setup mixng texture shader
-	Shader litShader("src/shaders/tests/lit-differentLightSrcs.vert", "src/shaders/tests/lit-differentLightSrcs.frag");
+	Shader litShader("../../../src/shaders/tests/lit-differentLightSrcs.vert", "../../../src/shaders/tests/lit-differentLightSrcs.frag");
 
 	//activate the shader program
 	litShader.use();

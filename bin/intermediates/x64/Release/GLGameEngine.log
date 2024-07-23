@@ -1,0 +1,10 @@
+﻿  AActor.cpp
+  ACamera.cpp
+  GLGameEngine.cpp
+  LoadUtility.cpp
+  Shader.cpp
+C:\Dev\CppSeries\GLGameEngine\src\Actors\AActor.cpp(1,10): error C1083: Cannot open include file: 'Actors/AActor.h': No such file or directory
+C:\Dev\CppSeries\GLGameEngine\src\Actors\ACamera.cpp(1,10): error C1083: Cannot open include file: 'Actors/ACamera.h': No such file or directory
+C:\Dev\CppSeries\GLGameEngine\src\GLGameEngine.cpp(1,10): error C1083: Cannot open include file: 'GLGameEngine.h': No such file or directory
+C:\Dev\CppSeries\GLGameEngine\src\helpers\LoadUtility.cpp(1,10): error C1083: Cannot open include file: 'helpers/LoadUtility.h': No such file or directory
+C:\Dev\CppSeries\GLGameEngine\src\helpers\Shader.cpp(1,10): error C1083: Cannot open include file: 'Shader.h': No such file or directory
