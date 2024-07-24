@@ -6,3 +6,10 @@ C:\Dev\CppSeries\GLGameEngine\src\Helpers\LoadUtility.cpp;C:\Dev\CppSeries\GLGam
 C:\Dev\CppSeries\GLGameEngine\src\Helpers\Shader.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\Shader.obj
 C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\glm\detail\glm.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glm.obj
 C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\glm\glm.cppm;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glm.cppm.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\backends\imgui_impl_glfw.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_impl_glfw.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_impl_opengl3.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\imgui.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\imgui_demo.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_demo.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\imgui_draw.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_draw.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\imgui_tables.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_tables.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\imgui\imgui_widgets.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\imgui_widgets.obj

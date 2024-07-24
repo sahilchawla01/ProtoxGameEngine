@@ -72,26 +72,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${SolutionDir)src\;C:\Dev\CppSeries\GLGameEngine\include</IncludePath>
-    <LibraryPath>${SolutionDir)src\ThirdParty\Libraries\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)src\ThirdParty\Libraries\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${SolutionDir)src\;</IncludePath>
-    <LibraryPath>${SolutionDir)src\ThirdParty\Libraries\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)src\ThirdParty\Libraries\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>${SolutionDir)src\ThirdParty\Libraries\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <LibraryPath>$(SolutionDir)src\ThirdParty\Libraries\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${SolutionDir)src\;${SolutionDir)src;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>${SolutionDir)src\ThirdParty\Libraries\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(SolutionDir)src\ThirdParty\Libraries\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${SolutionDir)src\;${SolutionDir)src;</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -107,7 +107,7 @@
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Dev\ThirdPartyLibraries\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;user32.lib;gdi32.lib;opengl32.lib;shell32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glfw3.lib;user32.lib;gdi32.lib;opengl32.lib;shell32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,6 +126,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -141,7 +142,7 @@
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Dev\ThirdPartyLibraries\libs;F:\Personal\Dev\ThirdPartyLibraries\libs;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;user32.lib;gdi32.lib;opengl32.lib;shell32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glfw3.lib;user32.lib;gdi32.lib;opengl32.lib;shell32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,6 +161,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -460,6 +462,15 @@
     <ClInclude Include="src\ThirdParty\glm\vec3.hpp" />
     <ClInclude Include="src\ThirdParty\glm\vec4.hpp" />
     <ClInclude Include="src\ThirdParty\glm\vector_relational.hpp" />
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imgui.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\ThirdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="src\ThirdParty\KHR\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -471,6 +482,13 @@
     <ClCompile Include="src\Helpers\Shader.cpp" />
     <ClCompile Include="src\ThirdParty\glm\detail\glm.cpp" />
     <ClCompile Include="src\ThirdParty\glm\glm.cppm" />
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\tests\lit-differentLightSrcs.frag" />

@@ -1,13 +1,3 @@
 ﻿  Scanning sources for module dependencies...
-  glm.cppm
-  Compiling...
-  glm.cppm
-  AActor.cpp
-  ACamera.cpp
   GLGameEngine.cpp
-  LoadUtility.cpp
-  Shader.cpp
-  glm.cpp
-  Generating Code...
-  glad.c
   GLGameEngine.vcxproj -> C:\Dev\CppSeries\GLGameEngine\bin\x64\Debug\GLGameEngine.exe

@@ -10,11 +10,12 @@
 -Implemented different types of light sources
 
 ##Features to add
--ImGui and integrate with parameters as required
 -Model(obj/fbx) loading
+-Editor "pause" state, to give access to the UI, by enabling the cursor
 
 #Libraries Used:
 -GLFW
 -Glad
 -GLM
 -STB
+-IMGUI
