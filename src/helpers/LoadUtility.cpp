@@ -1,7 +1,7 @@
 #include <helpers/LoadUtility.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#include <glad/glad.h>
+#include "stb_image.h"
+#include <ThirdParty/glad/glad.h>
 #include <iostream>
 
 int LoadUtility::loadTexture(char const* path)

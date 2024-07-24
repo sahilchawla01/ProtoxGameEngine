@@ -2,5 +2,7 @@ C:\Dev\CppSeries\GLGameEngine\src\Actors\AActor.cpp;C:\Dev\CppSeries\GLGameEngin
 C:\Dev\CppSeries\GLGameEngine\src\Actors\ACamera.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\ACamera.obj
 C:\Dev\CppSeries\GLGameEngine\src\glad.c;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glad.obj
 C:\Dev\CppSeries\GLGameEngine\src\GLGameEngine.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\GLGameEngine.obj
-C:\Dev\CppSeries\GLGameEngine\src\helpers\LoadUtility.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\LoadUtility.obj
-C:\Dev\CppSeries\GLGameEngine\src\helpers\Shader.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\Shader.obj
+C:\Dev\CppSeries\GLGameEngine\src\Helpers\LoadUtility.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\LoadUtility.obj
+C:\Dev\CppSeries\GLGameEngine\src\Helpers\Shader.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\Shader.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\glm\detail\glm.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glm.obj
+C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\glm\glm.cppm;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glm.cppm.obj

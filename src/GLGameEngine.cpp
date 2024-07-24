@@ -1,5 +1,5 @@
 #include "GLGameEngine.h"
-#include <Shader.h>
+#include <Helpers/Shader.h>
 #include <Actors/ACamera.h>
 #include <helpers/LoadUtility.h>
 #include <vector>
