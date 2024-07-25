@@ -661,9 +661,6 @@
     <Image Include="assets\textures\container2_specular_color.png" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="src\ThirdParty\Libraries\glfw3.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="src\ThirdParty\glm\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
