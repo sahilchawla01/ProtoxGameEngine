@@ -476,7 +476,7 @@
   <ItemGroup>
     <ClCompile Include="src\Actors\AActor.cpp" />
     <ClCompile Include="src\Actors\ACamera.cpp" />
-    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\ThirdParty\glad\glad.c" />
     <ClCompile Include="src\GLGameEngine.cpp" />
     <ClCompile Include="src\Helpers\LoadUtility.cpp" />
     <ClCompile Include="src\Helpers\Shader.cpp" />
@@ -650,6 +650,7 @@
     <None Include="src\ThirdParty\glm\gtx\vector_angle.inl" />
     <None Include="src\ThirdParty\glm\gtx\vector_query.inl" />
     <None Include="src\ThirdParty\glm\gtx\wrap.inl" />
+    <None Include="src\ThirdParty\Libraries\assimp-vc143-mtd.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\awesomeface.png" />

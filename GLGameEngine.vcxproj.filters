@@ -944,7 +944,7 @@
     <ClCompile Include="src\GLGameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.c">
+    <ClCompile Include="src\ThirdParty\glad\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Helpers\Shader.cpp">
@@ -1423,6 +1423,7 @@
     <None Include="src\ThirdParty\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\ThirdParty\Libraries\assimp-vc143-mtd.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\container.jpg">
