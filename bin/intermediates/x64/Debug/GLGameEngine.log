@@ -1,3 +1,20 @@
 ﻿  Scanning sources for module dependencies...
+  glm.cppm
+  Compiling...
+  glm.cppm
+  AActor.cpp
+  ACamera.cpp
   GLGameEngine.cpp
-  GLGameEngine.vcxproj -> C:\Dev\CppSeries\GLGameEngine\bin\x64\Debug\GLGameEngine.exe
+  LoadUtility.cpp
+  Shader.cpp
+  glm.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Generating Code...
+  glad.c
+LINK : fatal error LNK1104: cannot open file 'src\ThirdParty\Libraries\glfw3.lib'

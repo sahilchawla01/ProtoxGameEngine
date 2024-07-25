@@ -3,16 +3,16 @@
     "revision": 0,
     "rules": [
         {
-            "primary-output": "C:\\Dev\\CppSeries\\GLGameEngine\\\\bin\\intermediates\\x64\\Debug\\glm.cppm.obj",
+            "primary-output": "F:\\Personal\\Dev\\CppProjects\\ProtoxGameEngine\\\\bin\\intermediates\\x64\\Debug\\glm.cppm.obj",
             "outputs": [
-                "C:\\Dev\\CppSeries\\GLGameEngine\\bin\\intermediates\\x64\\Debug\\vc143.pdb",
-                "C:\\Dev\\CppSeries\\GLGameEngine\\\\bin\\intermediates\\x64\\Debug\\",
-                "C:\\Dev\\CppSeries\\GLGameEngine\\bin\\intermediates\\x64\\Debug\\glm.cppm.ifc"
+                "F:\\Personal\\Dev\\CppProjects\\ProtoxGameEngine\\bin\\intermediates\\x64\\Debug\\vc143.pdb",
+                "F:\\Personal\\Dev\\CppProjects\\ProtoxGameEngine\\\\bin\\intermediates\\x64\\Debug\\",
+                "F:\\Personal\\Dev\\CppProjects\\ProtoxGameEngine\\bin\\intermediates\\x64\\Debug\\glm.cppm.ifc"
             ],
             "provides": [
                 {
                     "logical-name": "glm",
-                    "source-path": "c:\\dev\\cppseries\\glgameengine\\src\\thirdparty\\glm\\glm.cppm",
+                    "source-path": "f:\\personal\\dev\\cppprojects\\protoxgameengine\\src\\thirdparty\\glm\\glm.cppm",
                     "is-interface": true
                 }
             ],
