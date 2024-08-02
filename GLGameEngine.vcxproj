@@ -165,6 +165,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Actors\AMesh.h" />
     <ClInclude Include="src\Actors\AActor.h" />
     <ClInclude Include="src\Actors\ACamera.h" />
     <ClInclude Include="src\GLGameEngine.h" />
@@ -474,6 +475,7 @@
     <ClInclude Include="src\ThirdParty\KHR\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Actors\AMesh.cpp" />
     <ClCompile Include="src\Actors\AActor.cpp" />
     <ClCompile Include="src\Actors\ACamera.cpp" />
     <ClCompile Include="src\ThirdParty\glad\glad.c" />

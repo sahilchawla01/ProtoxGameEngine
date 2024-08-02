@@ -939,6 +939,9 @@
     <ClInclude Include="src\ThirdParty\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Actors\AMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLGameEngine.cpp">
@@ -984,6 +987,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Actors\AMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1444,9 +1450,6 @@
     <Image Include="assets\textures\container2_emission.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="src\ThirdParty\Libraries\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\ThirdParty\glm\CMakeLists.txt" />
