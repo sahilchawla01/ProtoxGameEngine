@@ -1,5 +1,7 @@
+C:\Dev\CppSeries\GLGameEngine\src\Actors\AMesh.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\AMesh.obj
 C:\Dev\CppSeries\GLGameEngine\src\Actors\AActor.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\AActor.obj
 C:\Dev\CppSeries\GLGameEngine\src\Actors\ACamera.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\ACamera.obj
+C:\Dev\CppSeries\GLGameEngine\src\Actors\AStaticActor.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\AStaticActor.obj
 C:\Dev\CppSeries\GLGameEngine\src\ThirdParty\glad\glad.c;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\glad.obj
 C:\Dev\CppSeries\GLGameEngine\src\GLGameEngine.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\GLGameEngine.obj
 C:\Dev\CppSeries\GLGameEngine\src\Helpers\LoadUtility.cpp;C:\Dev\CppSeries\GLGameEngine\bin\intermediates\x64\Debug\LoadUtility.obj

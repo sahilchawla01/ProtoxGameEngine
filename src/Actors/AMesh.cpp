@@ -1,6 +1,6 @@
 #include "AMesh.h"
 
-AMesh::AMesh(std::vector<Vertex> vertices, std::vector<Textures> textures, std::vector<unsigned int> indices)
+AMesh::AMesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<unsigned int> indices)
 {
 	this->vertices = vertices;
 	this->textures = textures;

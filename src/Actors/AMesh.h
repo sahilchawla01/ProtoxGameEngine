@@ -1,7 +1,11 @@
 #pragma once
-#include "AActor.h"
 #include <vector>
 #include <string>
+#include <ThirdParty/glm/glm.hpp>
+#include <ThirdParty/glm/gtc/matrix_transform.hpp>
+#include <ThirdParty/glm/gtc/type_ptr.hpp>
+#include <Helpers/Shader.h>
+#include <Helpers/LoadUtility.h>
 
 struct Vertex
 {
@@ -10,20 +14,20 @@ struct Vertex
 	glm::vec3 texCoord;
 };
 
-struct Textures
+struct Texture
 {
 	int id;
 	std::string type;
 };
 
-class AMesh :  public AActor
+class AMesh
 {
 public:
 	std::vector<Vertex> vertices;
-	std::vector<Textures> textures;
+	std::vector<Texture> textures;
 	std::vector<unsigned int> indices;
 
-	AMesh(std::vector<Vertex> vertices, std::vector<Textures> textures, std::vector<unsigned int> indices);
+	AMesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<unsigned int> indices);
 	void Draw(Shader& shader);
 
 private:
